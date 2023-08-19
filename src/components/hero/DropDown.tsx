@@ -69,7 +69,7 @@ function DropDown() {
   return (
     <div className="relative flex w-full">
       <button
-        className="object-center min-w-fit text-black px-auto pt-3 rounded-md"
+        className="object-center min-w-fit text-black px-auto rounded-md"
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="object-center">

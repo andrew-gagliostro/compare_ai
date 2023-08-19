@@ -4,7 +4,7 @@ import { NavbarTwoColumns } from "./NavbarTwoColumns";
 
 export function NavBar() {
   return (
-    <div className="z-10 flex flex-full w-full min-h-fit max-h-fit px-10 pb-10 pt-10 content-center">
+    <div className="z-10 flex flex-full w-full min-h-fit max-h-fit px-5 pb-10 pt-5 content-center">
       <NavbarTwoColumns logo={<Logo />}>
         <div className="pr-auto">
           <DropDown />

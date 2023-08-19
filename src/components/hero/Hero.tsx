@@ -34,43 +34,38 @@ function Hero() {
       <NavBar />
       {user ? (
         <div className="text-center hero lg:mt-1 dark:invert flex flex-col items-center justify-around box-border">
-          <div className="text-7xl font-bold text-gray-500 mb-10">
+          <div className="text-6xl font-bold text-gray-500 mb-5">
             Compared
-            <div className="text-6xl font-bold rotating-text pb-10 pt-4 min-h-fit">
-              Create. Connect. Style. Share.
+            <div className="text-4xl subpixel-antialiased font-bold pb-5 mt-5 pt-4 min-h-fit ">
+              Helping You Make Decisions. Focusing On The Metrics that Matter.
             </div>
           </div>
 
-          <h2 className="text-2xl font-semibold pb-5">
-            <div>Share your interests, ideas, opinions, and passions</div>
-            <div>
-              Learn from a vibrant community of consumers, creators, artists,
-              and professionals
-            </div>
+          <h2 className="flex flex-col gap-2 text-2xl font-bold rotating-text pb-5">
+            <div>Eliminate The Noise. </div>
+            <div>Make The Right Choice.</div>
           </h2>
         </div>
       ) : (
-        <div className="text-center hero lg:mt-1 dark:invert flex flex-col items-center justify-around box-border px-3 pb-10">
-          <div className="text-7xl font-bold text-gray-500 mb-10">
+        <div className="text-center hero lg:mt-1 flex flex-col items-center dark:invert justify-around box-border px-3 pb-10">
+          <div className="text-6xl font-bold text-gray-500 mb-5">
             Compared
-            <div className="text-6xl font-bold rotating-text pb-10 pt-4 min-h-fit">
-              Create. Connect. Style. Share.
+            <div className="text-4xl subpixel-antialiased font-bold pb-5 mt-5 pt-4 min-h-fit ">
+              Helping You Make Decisions. Focusing On The Metrics that Matter.
             </div>
           </div>
 
-          <h2 className="text-2xl font-semibold pb-5">
-            <div>Share your interests, ideas, opinions, and passions</div>
-            <div>
-              Learn from a vibrant community of consumers, creators, artists,
-              and professionals
-            </div>
+          <h2 className="flex flex-col gap-2 text-2xl font-bold rotating-text pb-5">
+            <div>Eliminate The Noise. </div>
+            <div>Make The Right Choice.</div>
           </h2>
           <a
             onClick={() => {
-              router.push("/sisu");
+              router.push("/compare");
             }}
+            className="font-bold alignSelf-left text-xl hover:text-gray-700 dark:hover:text-gray-300 text-gray-100"
           >
-            <Button xl={true}>Create An Account Now</Button>
+            <Button xl={true}>Start Comparing Now</Button>
           </a>
         </div>
       )}
