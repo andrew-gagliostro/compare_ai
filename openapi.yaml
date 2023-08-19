@@ -1,0 +1,97 @@
+components:
+    examples: {}
+    headers: {}
+    parameters: {}
+    requestBodies: {}
+    responses: {}
+    schemas: {}
+    securitySchemes: {}
+info:
+    title: IODC
+    version: 1.0.0
+    description: 'IODC Provider'
+    license:
+        name: ISC
+    contact:
+        name: andrew-gagliostro
+openapi: 3.0.0
+paths:
+    /.well-known/openid-configuration:
+        get:
+            operationId: GetOidConfig
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                properties:
+                                    scopes_supported: {items: {type: string}, type: array}
+                                    jwks_uri: {type: string}
+                                    token_endpoint: {type: string}
+                                    authorization_endpoint: {type: string}
+                                    issuer: {type: string}
+                                required:
+                                    - scopes_supported
+                                    - jwks_uri
+                                    - token_endpoint
+                                    - authorization_endpoint
+                                    - issuer
+                                type: object
+            summary: 'Endpoint for client to retrieve OpenID Discovery Document'
+            security: []
+            parameters: []
+    /authorize:
+        get:
+            operationId: GetAuthorization
+            responses:
+                '200':
+                    description: OK
+            summary: 'Authorization enpoint : validation error will be thrown if any query param is missing'
+            security: []
+            parameters:
+                -
+                    description: 'URL to which server will redirect to following successful authorization'
+                    in: query
+                    name: redirect_uri
+                    required: true
+                    schema:
+                        type: string
+                -
+                    description: 'fixed - ''code'''
+                    in: query
+                    name: response_type
+                    required: true
+                    schema:
+                        type: string
+                -
+                    description: 'fixed - ''query'''
+                    in: query
+                    name: response_mode
+                    required: true
+                    schema:
+                        type: string
+                -
+                    description: '43-character string generated in client'
+                    in: query
+                    name: code_challenge
+                    required: true
+                    schema:
+                        type: string
+                -
+                    description: 'fixed - ''S256'''
+                    in: query
+                    name: code_challenge_method
+                    required: true
+                    schema:
+                        type: string
+                -
+                    description: 'fixed - ''openid'''
+                    in: query
+                    name: scope
+                    required: true
+                    schema:
+                        type: string
+servers:
+    -
+        url: 'http://localhost:8080/'

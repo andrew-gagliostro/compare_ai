@@ -1,0 +1,90 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 190, 190, 190;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 60, 60, 60;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+    to bottom,
+    rgb(var(--background-start-rgb)),
+    rgb(var(--background-end-rgb))
+  );
+}
+
+.hero {
+  min-height: 60vh;
+}
+
+/* .rotating-text {
+  background: linear-gradient(
+    to right,
+    #f69220,
+    #ff8c48,
+    #ff5f6d,
+    #ff467e,
+    #ff2f8f
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rotating 15s linear infinite;
+} */
+.rotating-text {
+  background: linear-gradient(
+    to right,
+    #471aa1,
+    #7c48ff,
+    #7c5fff,
+    #5646ff,
+    #2f74ff
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rotating 15s linear infinite;
+}
+
+@keyframes rotating {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+
+  100% {
+    filter: hue-rotate(360deg);
+  }
+}
+
+.bar {
+  width: 1.5rem;
+  height: 0.15rem;
+  background-color: rgb(0, 0, 0);
+  margin: 0.35rem 0.15rem;
+}
+
+.simple {
+  text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.4);
+}
+
+.amplify-button[data-variation="primary"] {
+  background: linear-gradient(
+    to right,
+    #471aa1,
+    #7c48ff,
+    #7c5fff,
+    #5646ff,
+    #2f74ff
+  );
+  animation: rotating 15s linear infinite;
+}
