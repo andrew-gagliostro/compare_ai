@@ -5,7 +5,7 @@ const inter = Inter({ subsets: ["latin"] });
 export default function HomeLinks() {
   return (
     <div className="flex grid text-center my-10 px-20 gap-10 lg:grid-cols-4 font-bold dark:invert">
-      <div
+      <a
         href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
         className="justifyCenter group rounded-lg border border-transparent px-5 py-4 hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700"
         target="_blank"
@@ -19,7 +19,7 @@ export default function HomeLinks() {
           Choose from a selectiion of templates and start adding content to your
           profile
         </p>
-      </div>
+      </a>
 
       <a
         href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
