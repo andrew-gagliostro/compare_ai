@@ -35,7 +35,7 @@ function Hero() {
       {user ? (
         <div className="text-center hero lg:mt-1 dark:invert flex flex-col items-center justify-around box-border">
           <div className="text-7xl font-bold text-gray-500 mb-10">
-            Expressd
+            Compared
             <div className="text-6xl font-bold rotating-text pb-10 pt-4 min-h-fit">
               Create. Connect. Style. Share.
             </div>
@@ -52,7 +52,7 @@ function Hero() {
       ) : (
         <div className="text-center hero lg:mt-1 dark:invert flex flex-col items-center justify-around box-border px-3 pb-10">
           <div className="text-7xl font-bold text-gray-500 mb-10">
-            Expressd
+            Compared
             <div className="text-6xl font-bold rotating-text pb-10 pt-4 min-h-fit">
               Create. Connect. Style. Share.
             </div>
@@ -122,7 +122,7 @@ export { Hero };
 //           }}
 //         >
 //           <Typography variant="h3" component="div" color="gray.500" mb={10}>
-//             Expressd
+//             Compared
 //             <Typography
 //               variant="h2"
 //               component="div"
@@ -163,7 +163,7 @@ export { Hero };
 //           }}
 //         >
 //           <Typography variant="h3" component="div" color="gray.500" mb={10}>
-//             Expressd
+//             Compared
 //             <Typography
 //               variant="h2"
 //               component="div"

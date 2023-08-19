@@ -1,6 +1,6 @@
 const FooterCopyright = () => (
   <div className="footer-copyright">
-    © Copyright {new Date().getFullYear()} {"Expressd"}. Powered with{" "}
+    © Copyright {new Date().getFullYear()} {"Compared"}. Powered with{" "}
     <span role="img" aria-label="Love">
       ♥
     </span>{" "}

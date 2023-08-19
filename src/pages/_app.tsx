@@ -21,7 +21,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <React.Fragment>
       <Head>
-        <title>Expressd</title>
+        <title>Compared</title>
         <meta
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width"
