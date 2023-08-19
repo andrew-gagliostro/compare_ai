@@ -3,10 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "ts-node server/src/server.ts",
-    "buildDev": "cd server && npm run build && cd .. && node server/dist/server.js",
-    "build": "cd server && npm run build && cd .. && next build",
-    "start": "NODE_ENV=production node server/dist/server.js",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
