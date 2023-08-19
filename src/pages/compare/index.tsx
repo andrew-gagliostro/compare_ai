@@ -9,12 +9,14 @@ import { DropDown } from "@/components/hero/DropDown";
 import { Logo } from "@/components/hero/Logo";
 import { NavBar } from "@/components/navigation/NavBar";
 import { Footer } from "@/components/layout/Footer";
+import CompareForm from "@/components/compare/CompareForm";
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col justify-between items-center">
       <NavBar />
       <HomeLinks></HomeLinks>
+      <CompareForm></CompareForm>
       <Footer></Footer>
     </main>
   );
