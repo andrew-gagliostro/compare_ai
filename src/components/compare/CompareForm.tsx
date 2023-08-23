@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Amplify, API } from "aws-amplify";
 import {
   TextField,
   Button,
@@ -39,8 +40,8 @@ function StyledForm() {
     event.preventDefault();
 
     // Define your API call here
-    const apiName = "MyApiName";
-    const path = "/path";
+    const apiName = "compareapi";
+    const path = "/links_and_prompts";
     const myInit = {
       // Set your headers and other options here
       // ...
@@ -51,9 +52,8 @@ function StyledForm() {
     };
 
     try {
-      // Perform your API call here
-      // const response = await API.get(apiName, path, myInit);
-      // Add your code to handle the response
+      let temp = await API.get(apiName, path, myInit);
+      console.log(temp);
     } catch (error) {
       console.log(error);
     }
