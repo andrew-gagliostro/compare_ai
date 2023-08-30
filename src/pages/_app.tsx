@@ -8,9 +8,9 @@ import { Amplify } from "aws-amplify";
 import AuthContext from "@/context/AuthContext";
 import "../styles/globals.css";
 import "@aws-amplify/ui-react/styles.css";
-import awsconfig from "../aws-exports";
+// import awsconfig from "../aws-exports";
 
-Amplify.configure(awsconfig);
+// Amplify.configure(awsconfig);
 
 function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
