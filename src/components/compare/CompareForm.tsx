@@ -41,7 +41,7 @@ function StyledForm() {
 
     // Define your API call here
     const apiName = "compareapi";
-    const path = "/comp/item";
+    const path = "/api";
     const myInit = {
       // Set your headers and other options here
       // ...
