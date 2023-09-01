@@ -42,7 +42,7 @@ function StyledForm() {
     setResponse("Loading...");
     // Define your API call here
     const apiName = "compareapi";
-    const path = "/api";
+    const path = "/api_withdata";
     //change below to body parameters
     const myInit = {
       // Set your headers and other options here
@@ -131,16 +131,15 @@ function StyledForm() {
       {/* if response is null, show nothing
       if response === "Loading..." create a loading box with some sort of effect
       else print out a styled response and have is fade in with some sort of effect*/}
-
       {response === null ? (
         ""
       ) : response === "Loading..." ? (
-        <div className="flex flex-col justify-center items-center">
+        <div className="flex flex-col mt-5 justify-center items-center">
           <div className="w-16 h-16 border-4 border-t-4 border-gray-900 rounded-full animate-spin"></div>
           <p className="text-black">{response}</p>
         </div>
       ) : (
-        <div className="flex flex-col justify-center items-center">
+        <div className="flex flex-col mt-5 justify-center items-center">
           <div className="w-16 h-16 border-4 border-t-4 border-gray-900 rounded-full animate-spin"></div>
           <p className="text-black">{response}</p>
         </div>
