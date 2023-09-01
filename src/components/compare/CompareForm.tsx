@@ -16,6 +16,7 @@ function StyledForm() {
   const [prompt, setPrompt] = useState("");
   const [links, setLinks] = useState<string[]>([]);
   const [newLink, setNewLink] = useState("");
+  const [response, setResponse] = useState<any>(null);
 
   const handleAddLink = () => {
     if (newLink.trim() !== "") {
@@ -38,7 +39,7 @@ function StyledForm() {
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
-
+    setResponse("Loading...");
     // Define your API call here
     const apiName = "compareapi";
     const path = "/api";
@@ -52,8 +53,15 @@ function StyledForm() {
     };
 
     try {
-      let temp = await API.get(apiName, path, myInit);
-      console.log(temp);
+      let res = await API.post(apiName, path, myInit);
+
+      /*
+      after posting to above endpoint, get response and
+      setResponse to the result field of response
+      */
+
+      setResponse(res.result);
+      console.log(JSON.stringify(res));
     } catch (error) {
       console.log(error);
     }
@@ -117,6 +125,23 @@ function StyledForm() {
       >
         Submit
       </Button>
+      {/* if response is null, show nothing
+      if response === "Loading..." create a loading box with some sort of effect
+      else print out a styled response and have is fade in with some sort of effect*/}
+
+      {response === null ? (
+        ""
+      ) : response === "Loading..." ? (
+        <div className="flex flex-col justify-center items-center">
+          <div className="w-16 h-16 border-4 border-t-4 border-gray-900 rounded-full animate-spin"></div>
+          <p className="text-black">{response}</p>
+        </div>
+      ) : (
+        <div className="flex flex-col justify-center items-center">
+          <div className="w-16 h-16 border-4 border-t-4 border-gray-900 rounded-full animate-spin"></div>
+          <p className="text-black">{response}</p>
+        </div>
+      )}
     </form>
   );
 }
