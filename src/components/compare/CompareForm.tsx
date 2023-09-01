@@ -43,13 +43,16 @@ function StyledForm() {
     // Define your API call here
     const apiName = "compareapi";
     const path = "/api";
+    //change below to body parameters
     const myInit = {
       // Set your headers and other options here
       // ...
-      queryStringParameters: {
+      body: {
         prompt: prompt,
         links: links,
       },
+
+      //add prompt and links to body
     };
 
     try {
