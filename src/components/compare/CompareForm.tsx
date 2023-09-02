@@ -42,7 +42,7 @@ function StyledForm() {
     setResponse("Loading...");
     // Define your API call here
     const apiName = "compareapi";
-    const path = "/withdata";
+    const path = "/api";
     //change below to body parameters
     const myInit = {
       // Set your headers and other options here
