@@ -63,7 +63,7 @@ function StyledForm() {
       setResponse to the result field of response
       */
 
-      setResponse(res.result);
+      setResponse(JSON.parse(res.result)["content"]);
       console.log(JSON.stringify(res));
     } catch (error) {
       console.log(error);
