@@ -62,6 +62,7 @@ function StyledForm() {
       after posting to above endpoint, get response and
       setResponse to the result field of response
       */
+      let temp = res.result;
       setResponse(res.result);
       console.log(JSON.stringify(res));
     } catch (error) {
@@ -72,7 +73,7 @@ function StyledForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col text-center w-full h-full p-5 bg-gray-200 rounded-lg"
+      className="flex flex-col text-center w-full h-full p-5 bg-gray-200 rounded-lg dark:invert"
     >
       <div className="mb-5">
         <TextField
