@@ -62,8 +62,7 @@ function StyledForm() {
       after posting to above endpoint, get response and
       setResponse to the result field of response
       */
-
-      setResponse(JSON.parse(res.result)["content"]);
+      setResponse(res.result);
       console.log(JSON.stringify(res));
     } catch (error) {
       console.log(error);
