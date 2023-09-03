@@ -157,8 +157,7 @@ function StyledForm() {
         </div>
       ) : (
         <div className="flex flex-col mt-5 justify-center items-center">
-          <div className="w-16 h-16 border-4 border-t-4 border-gray-900 rounded-full animate-spin"></div>
-          <p className="text-black">{response}</p>
+          <p className="text-black mt-5">{response}</p>
         </div>
       )}
     </form>
