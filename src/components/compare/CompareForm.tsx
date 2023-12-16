@@ -11,6 +11,15 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import remarkGfm from "remark-gfm";
+import styles from "./Markdown.module.scss";
+import axios from "axios";
+import { Box } from "@mui/material";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
+import rehypePrism from "@mapbox/rehype-prism";
+import 'prismjs/themes/prism.css';
 
 function StyledForm() {
   const [prompt, setPrompt] = useState("");
@@ -56,13 +65,18 @@ function StyledForm() {
     };
 
     try {
-      let res = await API.post(apiName, path, myInit);
+      // let res = await API.post(apiName, path, myInit);
 
+      let res = (await axios.post(`/api/compare`, {
+        prompt: prompt,
+        links: links,
+      })) as any;
+      console.log("GOT RESPONSE");
       /*
       after posting to above endpoint, get response and
       setResponse to the result field of response
       */
-      let temp = res.result;
+      let temp = res.data.result;
       //remove double quotes from temp string
       temp = temp.replace(/['"]+/g, "");
       setResponse(temp);
@@ -72,11 +86,12 @@ function StyledForm() {
   };
 
   return (
+    <Box sx={{minHeight: '50vh', flexGrow:1, width:'100%'}} >
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col text-center w-full h-full p-5 bg-gray-200 rounded-lg dark:invert"
+      className="flex flex-col text-center w-full h-full p-5 rounded-lg dark:invert"
     >
-      <div className="mb-5">
+      <Box className="mb-5">
         <TextField
           label="Prompt"
           value={prompt}
@@ -88,8 +103,8 @@ function StyledForm() {
             className: "text-black",
           }}
         />
-      </div>
-      <div className="mb-5">
+      </Box>
+      <Box sx={{ marginBottom: 5 }}>
         <TextField
           label="Add Link"
           value={newLink}
@@ -108,8 +123,8 @@ function StyledForm() {
             ),
           }}
         />
-      </div>
-      <div className="mb-5">
+      </Box>
+      <Box className="mb-5">
         <List>
           {links.map((link, index) => (
             <ListItem key={index}>
@@ -120,7 +135,7 @@ function StyledForm() {
             </ListItem>
           ))}
         </List>
-      </div>
+      </Box>
       <Button
         type="submit"
         variant="contained"
@@ -132,35 +147,71 @@ function StyledForm() {
       {/* if response is null, show nothing
       if response === "Loading..." create a loading box with some sort of effect
       else print out a styled response and have is fade in with some sort of effect*/}
-      {response === null ? (
-        ""
-      ) : response === "Loading..." ? (
-        // Spinning loading wheel saying Loading...
-        <div className="flex flex-col mt-10 justify-center items-center">
-          <svg
-            aria-hidden="true"
-            className="w-16 h- mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
-            viewBox="0 0 100 101"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+      <Box sx={{ marginTop: 10 }}>
+        {response === null ? (
+          ""
+        ) : response === "Loading..." ? (
+          // Spinning loading wheel saying Loading...
+          <Box className="flex flex-col mt-10 justify-center items-center">
+            <svg
+              aria-hidden="true"
+              className="w-16 h- mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+              viewBox="0 0 100 101"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                fill="currentColor"
+              />
+              <path
+                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                fill="currentFill"
+              />
+            </svg>
+            <p className="text-black mt-10">{response}</p>
+          </Box>
+        ) : (
+          // eslint-disable-next-line react/no-children-prop
+          <Box
+            sx={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              color: "white",
+              fontSize: "medium",
+              textAlign: "left",
+              background:
+                "linear-gradient(to bottom,  rgba(203,203,203,255), rgba(203,203,203,255))",
+                borderRadius: 2,
+            }}
           >
-            <path
-              d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-              fill="currentColor"
-            />
-            <path
-              d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-              fill="currentFill"
-            />
-          </svg>
-          <p className="text-black mt-10">{response}</p>
-        </div>
-      ) : (
-        <div className="flex flex-col mt-5 justify-center items-center">
-          <p className="text-black mt-5">{response}</p>
-        </div>
-      )}
+            <Box
+              sx={{
+                my: 1,
+                width: "95%",
+                padding: 2,
+                borderRadius: 1,
+                flexDirection: "column",
+                display: "flex",
+                justifyContent: "flex-start",
+                color: "gray",
+                fontSize: "medium",
+                textAlign: "left",
+              }}
+            >
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw, rehypeSanitize, rehypePrism]}
+              >
+                {response}
+              </ReactMarkdown>
+            </Box>
+          </Box>
+        )}
+      </Box>
     </form>
+    </Box>
   );
 }
 
