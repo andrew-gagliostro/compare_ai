@@ -7,6 +7,14 @@ import {
   ListItem,
   ListItemText,
   InputAdornment,
+  Typography,
+  TableContainer,
+  Table,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableHead,
+  Paper,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -88,10 +96,10 @@ function StyledForm() {
     try {
       // let res = await API.post(apiName, path, myInit);
 
-      let res = (await axios.post(`/api/compare`, {
+      res = (await axios.post(`/api/compare`, {
         prompt: prompt,
         links: links,
-      })) as any;
+      }));
       console.log("GOT RESPONSE");
       /*
       after posting to above endpoint, get response and
@@ -135,8 +143,9 @@ function StyledForm() {
     <Box
       sx={{
         minHeight: "50vh",
-        flexGrow: 1,
-        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        maxWidth: "100vw",
         color: "gray",
         "& .MuiOutlinedInput-root": {
           "& fieldset": {
@@ -156,7 +165,7 @@ function StyledForm() {
     >
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col text-center w-full h-full p-5 rounded-lg"
+        className="flex flex-col text-center w-full dark:invert p-5 rounded-lg"
       >
         <Box className="mb-5">
           <TextField
@@ -199,21 +208,41 @@ function StyledForm() {
             display: "flex",
             flexDirection: "column",
             flexWrap: "wrap",
+            justifyContent: "space-between",
+            alignContent: "center",
           }}
         >
           <List
             className="mb-5"
             sx={{
               color: "gray",
-              maxWidth: "100%",
               display: "flex",
+              maxWidth: "100%",
               flexDirection: "column",
+              alignItemS: "center",
+              alignContent: "space-between",
               flexWrap: "wrap",
             }}
           >
             {links.map((link, index) => (
-              <ListItem key={index}>
-                <ListItemText primary={link} color="black" />
+              <ListItem
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+                key={index}
+              >
+                <Typography
+                  sx={{
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    color: "black",
+                    maxWidth: "90%",
+                  }}
+                >
+                  {link}
+                </Typography>
                 <IconButton onClick={() => handleRemoveLink(index)}>
                   <DeleteIcon />
                 </IconButton>
@@ -226,6 +255,13 @@ function StyledForm() {
           variant="contained"
           color="primary"
           className="bg-gray-900"
+          sx={{
+            display: "flex",
+            maxWidth: "20%",
+            justifySelf: "center",
+            alignSelf: "center",
+            margin: "auto",
+          }}
         >
           Submit
         </Button>
@@ -296,21 +332,79 @@ function StyledForm() {
           )}
         </Box>
       </form>
-      <Box>
-        History <br></br>
-        {history.map((item: Partial<SubmissionHistoryModel>, index) => {
-          if (item.response && item.links)
-            return (
-              <Box key={index} onDoubleClick={() => handleLoadHistory(index)}>
-                <p>Prompt: {item.prompt}</p>
-                <p>Links: {item.links.join(", ")}</p>
-                <ReactMarkdown>{item.response}</ReactMarkdown>
-              </Box>
-            );
-          else {
-            return null;
-          }
-        })}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          height: "fit-content",
+          marginTop: 2,
+        }}
+      >
+        <Typography variant="h6">History</Typography>
+        <TableContainer component={Paper}>
+          <Table sx={{ maxWidth: "100%" }} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell
+                  sx={{
+                    maxWidth: 200,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  Prompt
+                </TableCell>
+                <TableCell
+                  sx={{
+                    maxWidth: 200,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  Links
+                </TableCell>
+                <TableCell>Response</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {history.map((item: Partial<SubmissionHistoryModel>, index) => {
+                if (item.response && item.links)
+                  return (
+                    <TableRow
+                      key={index}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 }}}
+                      onDoubleClick={() => handleLoadHistory(index)}
+                    >
+                      <TableCell
+                        sx={{
+                          maxWidth: 200,
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {item.prompt}
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          maxWidth: 200,
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {item.links.join(", ")}
+                      </TableCell>
+                      <TableCell>
+                        <ReactMarkdown>{item.response}</ReactMarkdown>
+                      </TableCell>
+                    </TableRow>
+                  );
+                else {
+                  return null;
+                }
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Box>
     </Box>
   );
