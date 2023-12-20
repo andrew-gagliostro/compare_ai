@@ -3,11 +3,11 @@ import Link from "next/link";
 import React, { useContext } from "react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { Button } from "@aws-amplify/ui-react";
 import { UserModel } from "@/models/User";
 import { signOut } from "next-auth/react";
 import { GoogleProfile } from "next-auth/providers/google";
 import { AuthCtx } from "@/context/AuthContext";
+import { Button } from "@mui/material";
 
 function DropDown() {
   const [isOpen, setIsOpen] = useState(false);

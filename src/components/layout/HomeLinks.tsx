@@ -6,10 +6,10 @@ const inter = Inter({ subsets: ["latin"] });
 export default function HomeLinks() {
   return (
     <Box
-      className="lg:grid-cols-4 font-bold dark:invert lg:gap-10"
+      className="lg:grid-cols-4 font-bold dark:invert text-gray-500 lg:gap-10"
       sx={{
         display: "flex",
-        minHeight: "50vh",
+        minHeight: "40vh",
         alignItems: "center",
         textJustify: "center",
         textAlign: "center",

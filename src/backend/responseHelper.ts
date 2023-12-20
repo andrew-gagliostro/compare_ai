@@ -1,6 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
 import safeObject from "./safeObject";
+import { Session, getServerSession } from "next-auth";
+import { authOptions } from "@/pages/api/auth/[...nextauth]";
 
 export interface Response {
   success: boolean;
@@ -14,6 +16,8 @@ class ResponseHelper {
   response: NextApiResponse;
 
   safeProps: string[] = [];
+
+  session: Session | null = null;
 
   constructor(req: NextApiRequest, res: NextApiResponse) {
     this.request = req;
@@ -84,7 +88,17 @@ class ResponseHelper {
     return this.methodNotAllowed();
   }
 
+  async getSession() {
+    this.session = await getServerSession(
+      this.request,
+      this.response,
+      authOptions
+    );
+  }
+
   async send(): Promise<void | true> {
+        await this.getSession();
+        
     let response: Response = {
       status: 200,
       success: true,

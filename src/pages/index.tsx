@@ -15,7 +15,7 @@ export default function Home() {
   return (
     <ThemeProvider theme>
       <CssBaseline />
-      <main className="flex min-h-screen flex-col justify-between items-center">
+      <main className="flex min-h-screen flex-col items-center">
         <Hero />
         <HomeLinks></HomeLinks>
         <Footer></Footer>

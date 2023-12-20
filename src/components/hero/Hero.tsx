@@ -33,7 +33,6 @@ function Hero() {
   return (
     <>
       <NavBar />
-      {user ? (
         <Box className="text-center hero lg:mt-1 dark:invert flex flex-col items-center justify-around box-border">
           <Box
             className="font-bold text-gray-500 mb-5"
@@ -59,29 +58,6 @@ function Hero() {
             <Button xl={true}>Start Comparing Now</Button>
           </a>
         </Box>
-      ) : (
-        <Box className="text-center hero lg:mt-1 flex flex-col items-center dark:invert justify-around box-border px-3 pb-10">
-          <Box className="text-6xl font-bold text-gray-500 mb-5">
-            Compared
-            <Box className="text-4xl subpixel-antialiased font-bold pb-5 mt-5 pt-4 min-h-fit ">
-              Helping You Make Decisions. Focusing On The Metrics that Matter.
-            </Box>
-          </Box>
-
-          <h2 className="flex flex-col gap-2 text-2xl font-bold rotating-text pb-5">
-            <Box>Eliminate The Noise. </Box>
-            <Box>Make The Right Choice.</Box>
-          </h2>
-          <a
-            onClick={() => {
-              router.push("/compare");
-            }}
-            className="font-bold alignSelf-left text-xl hover:text-gray-700 dark:hover:text-gray-300 text-gray-100"
-          >
-            <Button xl={true}>Start Comparing Now</Button>
-          </a>
-        </Box>
-      )}
     </>
   );
 }

@@ -1,14 +1,13 @@
 import React, { useEffect } from "react";
 import Head from "next/head";
-import { ThemeProvider } from "@material-ui/core/styles";
-import CssBaseline from "@material-ui/core/CssBaseline";
+import { ThemeProvider } from "@mui/material";
+import { CssBaseline } from "@mui/material";
 import theme from "@/theme";
 import type { AppProps } from "next/app";
 import { Amplify } from "aws-amplify";
 import AuthContext from "@/context/AuthContext";
 import "../styles/globals.css";
 import "@aws-amplify/ui-react/styles.css";
-import awsconfig from "../aws-exports";
 import { NextPage } from "next";
 import { SessionProvider } from "next-auth/react";
 
@@ -19,8 +18,6 @@ export type NextPageWithLayout = NextPage & {
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };
-
-Amplify.configure(awsconfig);
 
 function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   useEffect(() => {
