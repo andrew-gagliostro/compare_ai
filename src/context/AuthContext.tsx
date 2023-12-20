@@ -1,56 +1,42 @@
-import {
-  createContext,
-  Dispatch,
-  ReactElement,
-  SetStateAction,
-  useContext,
-  useEffect,
+import React, {
   useState,
+  createContext,
+  PropsWithChildren,
+  useMemo,
+  useEffect,
 } from "react";
-import { CognitoUser } from "@aws-amplify/auth";
-import { Auth, Hub } from "aws-amplify";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { Session } from "next-auth";
 
-interface UserContextType {
-  user: any | null;
-  setUser: Dispatch<SetStateAction<any>>;
-}
+export const AuthCtx = createContext<any>({
+  authRequired: (required: boolean) => {},
+  getSession: () => null as Session | null,
+});
 
-const UserContext = createContext<UserContextType>({} as UserContextType);
+const AuthProvider = (props: PropsWithChildren) => {
+  const { children } = props;
+  const session = useSession();
+  const router = useRouter();
 
-interface Props {
-  children: React.ReactElement;
-}
-
-export default function AuthContext({ children }: Props): ReactElement {
-  const [user, setUser] = useState<CognitoUser | null>(null);
-
-  useEffect(() => {
-    checkUser();
-  }, []);
+  const [authRequired, setAuthRequired] = useState<boolean>(false);
 
   useEffect(() => {
-    Hub.listen("auth", () => {
-      // perform some action to update state whenever an auth event is detected.
-      checkUser();
-    });
-  }, []);
-
-  async function checkUser() {
-    try {
-      const amplifyUser = await Auth.currentUserInfo();
-      setUser(amplifyUser);
-    } catch (error) {
-      // No current signed in user.
-      console.error(error);
-      setUser(null);
+    if (authRequired && session.status === "unauthenticated") {
+      router.push("/");
     }
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authRequired, router.isReady, session]);
 
-  return (
-    <UserContext.Provider value={{ user, setUser }}>
-      {children}
-    </UserContext.Provider>
+  const ctx = useMemo(
+    () => ({
+      authRequired: (required: boolean) => setAuthRequired(required),
+      getSession: () => session.data,
+    }),
+    [session]
   );
-}
 
-export const useUser = (): UserContextType => useContext(UserContext);
+  return <AuthCtx.Provider value={ctx}>{children}</AuthCtx.Provider>;
+};
+
+export default AuthProvider;

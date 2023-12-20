@@ -10,6 +10,7 @@ import { Auth } from "aws-amplify";
 import { DropDown } from "./DropDown";
 import { useRouter } from "next/router";
 import { NavBar } from "../navigation/NavBar";
+import { Box } from "@mui/material";
 
 function Hero() {
   const router = useRouter();
@@ -33,31 +34,43 @@ function Hero() {
     <>
       <NavBar />
       {user ? (
-        <div className="text-center hero lg:mt-1 dark:invert flex flex-col items-center justify-around box-border">
-          <div className="text-6xl font-bold text-gray-500 mb-5">
+        <Box className="text-center hero lg:mt-1 dark:invert flex flex-col items-center justify-around box-border">
+          <Box
+            className="font-bold text-gray-500 mb-5"
+            sx={{ fontSize: "5rem" }}
+          >
             Compared
-            <div className="text-4xl subpixel-antialiased font-bold pb-5 mt-5 pt-4 min-h-fit ">
-              Helping You Make Decisions. Focusing On The Metrics that Matter.
-            </div>
-          </div>
+            <Box className="text-4xl subpixel-antialiased font-bold pb-5 mt-5 pt-4 min-h-fit ">
+              Helping You Make Decisions <br></br> Easing The Burden Of
+              Information Overload
+            </Box>
+          </Box>
 
-          <h2 className="flex flex-col gap-2 text-2xl font-bold rotating-text pb-5">
-            <div>Eliminate The Noise. </div>
-            <div>Make The Right Choice.</div>
-          </h2>
-        </div>
+          {/* <h2 className="flex flex-col gap-2 text-2xl font-bold rotating-text pb-5">
+            <Box>Eliminate The Noise. </Box>
+            <Box>Make The Right Choice.</Box>
+          </h2> */}
+          <a
+            onClick={() => {
+              router.push("/compare");
+            }}
+            className="font-bold alignSelf-left text-xl hover:text-gray-700 dark:hover:text-gray-300 text-gray-100"
+          >
+            <Button xl={true}>Start Comparing Now</Button>
+          </a>
+        </Box>
       ) : (
-        <div className="text-center hero lg:mt-1 flex flex-col items-center dark:invert justify-around box-border px-3 pb-10">
-          <div className="text-6xl font-bold text-gray-500 mb-5">
+        <Box className="text-center hero lg:mt-1 flex flex-col items-center dark:invert justify-around box-border px-3 pb-10">
+          <Box className="text-6xl font-bold text-gray-500 mb-5">
             Compared
-            <div className="text-4xl subpixel-antialiased font-bold pb-5 mt-5 pt-4 min-h-fit ">
+            <Box className="text-4xl subpixel-antialiased font-bold pb-5 mt-5 pt-4 min-h-fit ">
               Helping You Make Decisions. Focusing On The Metrics that Matter.
-            </div>
-          </div>
+            </Box>
+          </Box>
 
           <h2 className="flex flex-col gap-2 text-2xl font-bold rotating-text pb-5">
-            <div>Eliminate The Noise. </div>
-            <div>Make The Right Choice.</div>
+            <Box>Eliminate The Noise. </Box>
+            <Box>Make The Right Choice.</Box>
           </h2>
           <a
             onClick={() => {
@@ -67,7 +80,7 @@ function Hero() {
           >
             <Button xl={true}>Start Comparing Now</Button>
           </a>
-        </div>
+        </Box>
       )}
     </>
   );
@@ -116,11 +129,11 @@ export { Hero };
 //             boxSizing: "border-box",
 //           }}
 //         >
-//           <Typography variant="h3" component="div" color="gray.500" mb={10}>
+//           <Typography variant="h3" component="Box" color="gray.500" mb={10}>
 //             Compared
 //             <Typography
 //               variant="h2"
-//               component="div"
+//               component="Box"
 //               color="gray.500"
 //               sx={{
 //                 fontWeight: "bold",
@@ -135,11 +148,11 @@ export { Hero };
 //           </Typography>
 
 //           <Typography variant="h6" component="h2" fontWeight="bold" pb={5}>
-//             <div>Share your interests, ideas, opinions, and passions</div>
-//             <div>
+//             <Box>Share your interests, ideas, opinions, and passions</Box>
+//             <Box>
 //               Learn from a vibrant community of consumers, creators, artists,
 //               and professionals
-//             </div>
+//             </Box>
 //           </Typography>
 //         </Box>
 //       ) : (
@@ -157,11 +170,11 @@ export { Hero };
 //             paddingBottom: "10px",
 //           }}
 //         >
-//           <Typography variant="h3" component="div" color="gray.500" mb={10}>
+//           <Typography variant="h3" component="Box" color="gray.500" mb={10}>
 //             Compared
 //             <Typography
 //               variant="h2"
-//               component="div"
+//               component="Box"
 //               color="gray.500"
 //               sx={{
 //                 fontWeight: "bold",
@@ -176,11 +189,11 @@ export { Hero };
 //           </Typography>
 
 //           <Typography variant="h6" component="h2" fontWeight="bold" pb={5}>
-//             <div>Share your interests, ideas, opinions, and passions</div>
-//             <div className="mt-5">
+//             <Box>Share your interests, ideas, opinions, and passions</Box>
+//             <Box className="mt-5">
 //               Learn from a vibrant community of consumers, creators, artists,
 //               and professionals
-//             </div>
+//             </Box>
 //           </Typography>
 
 //           <a
