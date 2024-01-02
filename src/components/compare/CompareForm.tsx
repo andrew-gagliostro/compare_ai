@@ -46,7 +46,7 @@ function StyledForm() {
       try {
         const res = await axios.get(`/api/userHistory`); // replace with the right endpoint
         setHistory(res.data.result);
-        console.log(JSON.stringify(res.data.result))
+        console.log(JSON.stringify(res.data.result));
       } catch (error) {
         console.log(error);
       }
@@ -96,10 +96,10 @@ function StyledForm() {
     try {
       // let res = await API.post(apiName, path, myInit);
 
-      res = (await axios.post(`/api/compare`, {
+      res = await axios.post(`/api/compare`, {
         prompt: prompt,
         links: links,
-      }));
+      });
       console.log("GOT RESPONSE");
       /*
       after posting to above endpoint, get response and
@@ -145,6 +145,7 @@ function StyledForm() {
         minHeight: "50vh",
         display: "flex",
         flexDirection: "column",
+        width: "100vw",
         maxWidth: "100vw",
         color: "gray",
         "& .MuiOutlinedInput-root": {
@@ -335,21 +336,29 @@ function StyledForm() {
       <Box
         sx={{
           display: "flex",
+          padding: 5,
           flexDirection: "column",
           height: "fit-content",
           marginTop: 2,
         }}
       >
-        <Typography variant="h6">History</Typography>
-        <TableContainer component={Paper}>
+        <Typography
+          variant="h6"
+          className="dark:invert"
+          sx={{ marginBottom: 5 }}
+        >
+          History
+        </Typography>
+        <TableContainer sx={{ color: "white" }} component={Paper}>
           <Table sx={{ maxWidth: "100%" }} aria-label="simple table">
-            <TableHead>
-              <TableRow>
+            <TableHead color="seconardy">
+              <TableRow sx={{ color: "white" }}>
                 <TableCell
                   sx={{
                     maxWidth: 200,
                     overflow: "hidden",
                     textOverflow: "ellipsis",
+                    color: "white",
                   }}
                 >
                   Prompt
@@ -359,20 +368,30 @@ function StyledForm() {
                     maxWidth: 200,
                     overflow: "hidden",
                     textOverflow: "ellipsis",
+                    color: "white",
                   }}
                 >
                   Links
                 </TableCell>
-                <TableCell>Response</TableCell>
+                <TableCell
+                  sx={{
+                    maxWidth: 200,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    color: "white",
+                  }}
+                >
+                  Response
+                </TableCell>
               </TableRow>
             </TableHead>
-            <TableBody>
+            <TableBody color="primary" sx={{ color: "white" }}>
               {history.map((item: Partial<SubmissionHistoryModel>, index) => {
                 if (item.response && item.links)
                   return (
                     <TableRow
                       key={index}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 }}}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                       onDoubleClick={() => handleLoadHistory(index)}
                     >
                       <TableCell
@@ -380,6 +399,7 @@ function StyledForm() {
                           maxWidth: 200,
                           overflow: "hidden",
                           textOverflow: "ellipsis",
+                          color: "white",
                         }}
                       >
                         {item.prompt}
@@ -389,11 +409,16 @@ function StyledForm() {
                           maxWidth: 200,
                           overflow: "hidden",
                           textOverflow: "ellipsis",
+                          color: "white",
                         }}
                       >
                         {item.links.join(", ")}
                       </TableCell>
-                      <TableCell>
+                      <TableCell
+                        sx={{
+                          color: "white",
+                        }}
+                      >
                         <ReactMarkdown>{item.response}</ReactMarkdown>
                       </TableCell>
                     </TableRow>
