@@ -10,7 +10,7 @@ import { AuthCtx } from "@/context/AuthContext";
 
 export default function Home() {
   const { getSession, authRequired } = useContext(AuthCtx);
-  const [user, setUser] = useState< UserModel | null>(null);
+  const [user, setUser] = useState<UserModel | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -18,14 +18,12 @@ export default function Home() {
   }, []);
 
   return (
-      <main className="flex min-h-screen flex-col justify-between items-center">
-        <NavBar />
-        <div className="flex flex-row text-center text-3xl font-bold">
-          {user && user.username && (
-            <div>Hello {" " + JSON.stringify(user)}</div>
-          )}
-        </div>
-        <Footer></Footer>
-      </main>
+    <main className="flex min-h-screen flex-col justify-between items-center">
+      <NavBar />
+      <div className="flex flex-row text-center text-3xl font-bold">
+        {user && user.name && <div>Hello {" " + user.name}</div>}
+      </div>
+      <Footer></Footer>
+    </main>
   );
 }

@@ -32,5 +32,6 @@ const submissionHistorySchema = new mongoose.Schema<SubmissionHistoryModel>(
   }
 );
 
-export default mongoose.models.SubmissionHistory ||
+export default (mongoose.models
+  .SubmissionHistory as mongoose.Model<SubmissionHistoryModel>) ||
   mongoose.model("SubmissionHistory", submissionHistorySchema);

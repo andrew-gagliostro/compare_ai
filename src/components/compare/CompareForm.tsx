@@ -324,7 +324,7 @@ function StyledForm() {
               >
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeRaw, rehypeSanitize, rehypePrism]}
+                  rehypePlugins={[rehypeSanitize, rehypePrism]}
                 >
                   {response}
                 </ReactMarkdown>

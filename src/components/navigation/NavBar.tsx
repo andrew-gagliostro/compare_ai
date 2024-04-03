@@ -1,15 +1,32 @@
+import { Box } from "@mui/material";
 import { Logo } from "../hero/Logo";
-import { DropDown } from "../hero/DropDown";
+import DropDown from "./DropDown";
 import { NavbarTwoColumns } from "./NavbarTwoColumns";
+
+const menuItems = [
+  { label: "Home", route: "/" },
+  { label: "About", route: "/" },
+  { label: "Sign In / Sign Up", route: "/api/auth/signin" },
+  // add more menu items here
+];
 
 export function NavBar() {
   return (
-    <div className="z-10 flex flex-full w-full min-h-fit max-h-fit px-5 pb-10 pt-5 content-center">
+    <Box
+      sx={{
+        display: "flex",
+        flexGrow: 2,
+        width: "100%",
+        minHeight: "fit-content",
+        maxHeight: "fit-content",
+        px: 2,
+        justifyContent: "center",
+      }}
+    >
       <NavbarTwoColumns logo={<Logo />}>
-        <div className="pr-auto">
-          <DropDown />
-        </div>
+        {/* <DropDown menuItems={menuItems} /> */}
+        <DropDown />
       </NavbarTwoColumns>
-    </div>
+    </Box>
   );
 }
