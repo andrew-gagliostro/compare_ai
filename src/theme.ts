@@ -1,17 +1,20 @@
 import { createTheme, responsiveFontSizes } from "@mui/material";
 
+export const primary = "#7a808d";
+export const secondary = "#857D9E";
+
 const theme = createTheme({
   palette: {
     background: {
-      paper: "#1b2330",
+      paper: "#fff",
       default: "#0d1218",
     },
     primary: {
-      main: "rgba(2, 106, 167, 1)",
+      main: primary,
       contrastText: "#fff",
     },
     secondary: {
-      main: "rgba(78, 151, 194, 1)",
+      main: secondary,
       contrastText: "#fff",
     },
     error: {
@@ -20,9 +23,6 @@ const theme = createTheme({
     },
   },
   typography: {
-    button: {
-      textTransform: "none",
-    },
     fontFamily: [
       "Inter",
       "ui-sans-serif",
@@ -50,7 +50,6 @@ const theme = createTheme({
       letterSpacing: "-.025em",
       fontWeight: 700,
       fontSize: "2.25rem",
-      lineHeight: 2.5,
       color: "#fff",
     },
     h3: {
@@ -68,6 +67,75 @@ const theme = createTheme({
       fontSize: "1rem",
       lineHeight: 1.75,
       color: "#9CA3AF",
+    },
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: "none",
+        },
+      },
+    },
+    MuiMenu: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: secondary,
+          color: "#fff",
+          gap: 1,
+        },
+      },
+    },
+    MuiMenuList: {
+      styleOverrides: {
+        root: {
+          zIndex: 1000,
+        },
+      },
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          color: secondary,
+          fontWeight: 550,
+          backgroundColor: "#f6f6f6",
+          "&:hover": {
+            backgroundColor: "#dddddd",
+          },
+          borderRadius: 5,
+        },
+      },
+    },
+    // MuiIconButton: {
+    //   styleOverrides: {
+    //     root: { color: primary },
+    //   },
+    // },
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          color: primary,
+          margin: 0,
+        },
+      },
+    },
+    MuiCssBaseline: {
+      styleOverrides: `
+                *::-webkit-scrollbar {
+                    width: 10px;
+                }
+                *::-webkit-scrollbar-track {
+                    background: #1b1a21;
+                }
+                *::-webkit-scrollbar-thumb {
+                    background-color: #888;
+                    border-radius: 20px;
+                    border: 3px solid #1b1a21;
+                }
+                *::-webkit-scrollbar-thumb:hover {
+                    background-color: #555;
+                }
+            `,
     },
   },
 });

@@ -1,101 +1,3 @@
-// import React, { useState, useRef, useEffect } from "react";
-// import { useRouter } from "next/router";
-// import {
-//   IconButton,
-//   Drawer,
-//   List,
-//   ListItem,
-//   ListItemText,
-//   Box,
-//   Paper,
-//   Button,
-//   Typography,
-// } from "@mui/material";
-// import MenuIcon from "@mui/icons-material/Menu";
-
-// // Define a type for the menu items, with label and route properties
-// type MenuItem = {
-//   label: string;
-//   route: string;
-// };
-
-// // Define a type for the props accepted by the AppMenu component
-// type AppMenuProps = {
-//   menuItems: MenuItem[];
-// };
-
-// const AppMenu: React.FC<AppMenuProps> = ({ menuItems }) => {
-//   const [isOpen, setIsOpen] = useState(false);
-//   const [buttonPosition, setButtonPosition] = useState<DOMRect | undefined>();
-//   const buttonRef = useRef<HTMLButtonElement>(null);
-//   const router = useRouter();
-
-//   useEffect(() => {
-//     if (buttonRef.current) {
-//       setButtonPosition(buttonRef.current.getBoundingClientRect());
-//     }
-//   }, [buttonRef]);
-
-//   const toggleDrawer = (state: boolean) => {
-//     setIsOpen(state);
-//   };
-
-//   const handleItemClick = (path: string) => {
-//     router.push(path);
-//     setIsOpen(false); // Close drawer after navigation
-//   };
-
-//   const drawerWidth = 250;
-
-//   return (
-//     <Box>
-// <IconButton ref={buttonRef} onClick={() => toggleDrawer(true)}>
-//   <MenuIcon />
-// </IconButton>
-//       <Drawer
-//         anchor="left"
-//         open={isOpen}
-//         onClose={() => toggleDrawer(false)}
-//         ModalProps={{ BackdropProps: { invisible: true } }}
-//         // Add style to position the Paper below the IconButton
-//         PaperProps={{
-//           style: {
-//             position: "absolute",
-//             top: buttonPosition?.bottom ?? "auto",
-//             right: buttonPosition
-//               ? `calc(100vw - ${buttonPosition.right}px`
-//               : "auto",
-//             width: drawerWidth,
-//             height: "fit-content",
-//             borderRadius: 5,
-//           },
-//         }}
-//       >
-//         {/* Paper component contains the list items */}
-//         <Paper sx={{ width: 250 }} elevation={4}>
-//           <Box className="navmenu" sx={{ fontWeight: "bold" }}>
-//             <List>
-//               {menuItems.map((item, index) => (
-//                 <ListItem
-//                   button
-//                   key={index}
-//                   onClick={() => handleItemClick(item.route)}
-//                 >
-//                   <Typography sx={{ fontWeight: "bolder" }}>
-//                     {item.label}
-//                   </Typography>
-//                 </ListItem>
-//               ))}
-//             </List>
-//           </Box>
-//         </Paper>
-//       </Drawer>
-//     </Box>
-//   );
-// };
-
-// export default AppMenu;
-
 import * as React from "react";
 import Button from "@mui/material/Button";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
@@ -178,7 +80,7 @@ export default function MenuListComposition() {
   }, [open]);
 
   return (
-    <Stack direction="row" spacing={2}>
+    <Stack direction="row">
       <Box>
         <Button
           ref={anchorRef}

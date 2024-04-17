@@ -13,13 +13,13 @@ import theme from "@/theme";
 
 export default function Home() {
   return (
-    <ThemeProvider theme>
+    <>
       <CssBaseline />
       <main className="flex min-h-screen flex-col items-center">
         <Hero />
         <HomeLinks></HomeLinks>
         <Footer></Footer>
       </main>
-    </ThemeProvider>
+    </>
   );
 }
