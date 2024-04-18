@@ -14,7 +14,7 @@ export function NavbarTwoColumns(props: INavbarProps) {
   const router = useRouter();
 
   return (
-    <Box className="flex flex-full w-full justify-between dark:invert px-auto pt-5">
+    <Box className="flex flex-full w-full justify-between px-auto pt-5">
       <Box className="flex justify-start">{props.children}</Box>
       <Box onClick={() => router.push("/")}>
         <Logo></Logo>

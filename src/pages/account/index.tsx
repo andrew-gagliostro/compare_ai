@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { NavBar } from "@/components/navigation/NavBar";
-import { Footer } from "@/components/layout/Footer";
+import { Footer } from "@/components/footer/Footer";
 import { API } from "aws-amplify";
 import { useRouter } from "next/router";
 import { Authenticator } from "@aws-amplify/ui-react";

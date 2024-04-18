@@ -7,7 +7,7 @@ import { NavbarTwoColumns } from "@/components/navigation/NavbarTwoColumns";
 import { DropDown } from "@/components/hero/DropDown";
 import { Logo } from "@/components/hero/Logo";
 import { NavBar } from "@/components/navigation/NavBar";
-import { Footer } from "@/components/layout/Footer";
+import { Footer } from "@/components/footer/Footer";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import theme from "@/theme";
 

@@ -1,23 +1,22 @@
 import { ReactNode } from "react";
-import { Facebook, Instagram, Twitter, LinkedIn  } from "@mui/icons-material";
+import { Twitter, Instagram, Facebook, LinkedIn } from "@mui/icons-material";
+import { Box, IconButton } from "@mui/material";
 
 const FooterIconList = () => (
-  <div className="footer-icon-list flex flex-wrap justify-center pb-5">
-    <div className="space-x-4">
-      <a href="#" className="p-2 rounded-full hover:bg-blue-600">
-        <Facebook style={{ fontSize: 24 }} />
-      </a>
-      <a href="#" className="p-2 rounded-full hover:bg-red-600">
-        <Instagram style={{ fontSize: 24 }} />
-      </a>
-      <a href="#" className="p-2 rounded-full hover:bg-blue-500">
-        <Twitter style={{ fontSize: 24 }} />
-      </a>
-      <a href="#" className="p-2 rounded-full hover:bg-blue-500">
-        <LinkedIn style={{ fontSize: 24 }} />
-      </a>
-    </div>
-  </div>
+  <Box className="w-full flex flex-row flex-wrap space-x-5 justify-center pb-5">
+    <IconButton sx={{ color: "inherit", mx: 2 }}>
+      <Facebook />
+    </IconButton>
+    <IconButton sx={{ color: "inherit", mx: 2 }}>
+      <Instagram />
+    </IconButton>
+    <IconButton sx={{ color: "inherit", mx: 2 }}>
+      <Twitter />
+    </IconButton>
+    <IconButton sx={{ color: "inherit", mx: 2 }}>
+      <LinkedIn />
+    </IconButton>
+  </Box>
 );
 
 export { FooterIconList };
