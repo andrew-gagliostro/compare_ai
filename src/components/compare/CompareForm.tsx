@@ -15,7 +15,9 @@ import {
   TableCell,
   TableHead,
   Paper,
+  Container,
 } from "@mui/material";
+
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
@@ -140,34 +142,21 @@ function StyledForm() {
   };
 
   return (
-    <Box
+    <Paper
       sx={{
-        minHeight: "50vh",
+        width: "90%",
+        my: 4,
+        p: 3,
+        backgroundColor: "rgba(255, 255, 255, 0.75)", // Semi-transparent white background
+        backdropFilter: "blur(10px)", // Adding a blur effect to the background
+        borderRadius: "15px", // Optional: Adding some rounded corners to the Paper component
         display: "flex",
         flexDirection: "column",
-        width: "100vw",
-        maxWidth: "100vw",
-        color: "gray",
-        "& .MuiOutlinedInput-root": {
-          "& fieldset": {
-            borderColor: "gray",
-          },
-          "&.Mui-focused fieldset": {
-            borderColor: "black",
-          },
-        },
-        "& .MuiInputLabel-root": {
-          color: "gray",
-        },
-        "& .MuiInputLabel-root.Mui-focused": {
-          color: "black",
-        },
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col text-center w-full dark:invert p-5 rounded-lg"
-      >
+      <form onSubmit={handleSubmit} style={{ width: "100%" }}>
         <Box className="mb-5">
           <TextField
             label="Prompt"
@@ -317,7 +306,7 @@ function StyledForm() {
                   flexDirection: "column",
                   display: "flex",
                   justifyContent: "flex-start",
-                  color: "gray",
+                  color: "black",
                   fontSize: "medium",
                   textAlign: "left",
                 }}
@@ -344,94 +333,79 @@ function StyledForm() {
       >
         <Typography
           variant="h6"
-          className="dark:invert"
-          sx={{ marginBottom: 5 }}
+          sx={{ marginBottom: 5, color: "text.primary" }}
         >
           History
         </Typography>
-        <TableContainer sx={{ color: "white" }} component={Paper}>
-          <Table sx={{ maxWidth: "100%" }} aria-label="simple table">
-            <TableHead color="seconardy">
-              <TableRow sx={{ color: "white" }}>
-                <TableCell
-                  sx={{
-                    maxWidth: 200,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    color: "white",
-                  }}
-                >
+        <TableContainer
+          component={Paper}
+          sx={{ borderRadius: 2, overflow: "hidden" }}
+        >
+          <Table sx={{ minWidth: 650 }} aria-label="submission history table">
+            <TableHead sx={{ backgroundColor: "primary.main" }}>
+              <TableRow>
+                <TableCell sx={{ color: "common.white", fontWeight: "bold" }}>
                   Prompt
                 </TableCell>
-                <TableCell
-                  sx={{
-                    maxWidth: 200,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    color: "white",
-                  }}
-                >
+                <TableCell sx={{ color: "common.white", fontWeight: "bold" }}>
                   Links
                 </TableCell>
-                <TableCell
-                  sx={{
-                    maxWidth: 200,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    color: "white",
-                  }}
-                >
+                <TableCell sx={{ color: "common.white", fontWeight: "bold" }}>
                   Response
                 </TableCell>
               </TableRow>
             </TableHead>
-            <TableBody color="primary" sx={{ color: "white" }}>
-              {history.map((item: Partial<SubmissionHistoryModel>, index) => {
-                if (item.response && item.links)
-                  return (
-                    <TableRow
-                      key={index}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                      onDoubleClick={() => handleLoadHistory(index)}
+            <TableBody>
+              {history.map((item, index) =>
+                item.response && item.links ? (
+                  <TableRow
+                    key={index}
+                    sx={{
+                      "&:nth-of-type(odd)": {
+                        backgroundColor: "action.hover",
+                      },
+                      "&:hover": { backgroundColor: "action.selected" },
+                    }}
+                    onDoubleClick={() => handleLoadHistory(index)}
+                  >
+                    <TableCell
+                      component="th"
+                      scope="row"
+                      sx={{
+                        color: "text.primary",
+                        maxWidth: 200,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
                     >
-                      <TableCell
-                        sx={{
-                          maxWidth: 200,
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          color: "white",
-                        }}
+                      {item.prompt}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        color: "text.primary",
+                        maxWidth: 200,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {item.links.join(", ")}
+                    </TableCell>
+                    <TableCell sx={{ color: "text.primary" }}>
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        rehypePlugins={[rehypeSanitize, rehypePrism]}
                       >
-                        {item.prompt}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          maxWidth: 200,
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          color: "white",
-                        }}
-                      >
-                        {item.links.join(", ")}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          color: "white",
-                        }}
-                      >
-                        <ReactMarkdown>{item.response}</ReactMarkdown>
-                      </TableCell>
-                    </TableRow>
-                  );
-                else {
-                  return null;
-                }
-              })}
+                        {item.response}
+                      </ReactMarkdown>
+                    </TableCell>
+                  </TableRow>
+                ) : null
+              )}
             </TableBody>
           </Table>
         </TableContainer>
       </Box>
-    </Box>
+    </Paper>
   );
 }
 

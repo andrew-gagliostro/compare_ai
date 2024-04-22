@@ -75,32 +75,20 @@ function Hero() {
             <Box>Easing The Burden Of Information Overload</Box>
           </Box>
         </Box>
-
         {/* <h2 className="flex flex-col gap-2 text-2xl font-bold rotating-text pb-5">
             <Box>Eliminate The Noise. </Box>
             <Box>Make The Right Choice.</Box>
           </h2> */}
-        {user ? (
-          <Button
-            color="secondary"
-            variant="contained"
-            onClick={() => {
-              router.push("/account");
-            }}
-          >
-            Go to Account
-          </Button>
-        ) : (
-          <Button
-            color="secondary"
-            variant="contained"
-            onClick={() => {
-              router.push("/api/auth/signin");
-            }}
-          >
-            Create An Account Now
-          </Button>
-        )}
+        \
+        <Button
+          color="secondary"
+          variant="contained"
+          onClick={() => {
+            router.push("/compare");
+          }}
+        >
+          Start Comparing Now
+        </Button>
       </Box>
     </>
   );

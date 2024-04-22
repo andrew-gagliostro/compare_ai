@@ -70,6 +70,16 @@ const theme = createTheme({
     },
   },
   components: {
+    MuiTextField: {
+      defaultProps: {
+        // Set global default props for TextField here
+        InputLabelProps: {
+          style: {
+            color: "#757575", // Your specific contrast color
+          },
+        },
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {

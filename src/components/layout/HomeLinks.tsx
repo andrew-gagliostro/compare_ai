@@ -5,7 +5,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function HomeLinks() {
   return (
-    <Box className="flex grid text-center text-gray-500 my-10 px-20 gap-10 lg:grid-cols-4 font-bold dark:invert">
+    <Box className="flex grid text-center text-gray-500 my-10 px-20 gap-10 lg:grid-cols-4 font-bold ">
       <Box
         className="justifyCenter group rounded-lg border border-transparent pb-3 px-5 hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700"
         rel="noopener noreferrer"

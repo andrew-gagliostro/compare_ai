@@ -15,22 +15,12 @@ import { Box } from "@mui/material";
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col justify-between items-center">
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          minHeight: "100vh",
-          flexGrow: 1,
-          justifyContent: "space-between",
-        }}
-      >
-        <NavBar />
-        <Box sx={{ display: "flex", width: "100%", height: "fit-content" }}>
-          <CompareForm></CompareForm>
-        </Box>
-        <HomeLinks></HomeLinks>
-        <Footer></Footer>
-      </Box>
+      <NavBar />
+
+      <CompareForm></CompareForm>
+
+      <HomeLinks></HomeLinks>
+      <Footer></Footer>
     </main>
   );
 }

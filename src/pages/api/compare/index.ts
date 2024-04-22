@@ -11,56 +11,38 @@ const { Readability } = require("@mozilla/readability");
 const { NodeHtmlMarkdown } = require("node-html-markdown");
 import type { NextApiRequest, NextApiResponse } from "next";
 import ResponseHelper from "@/backend/responseHelper";
+const puppeteer = require("puppeteer");
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-async function generateChatPrompt(url: string) {
-  const headers = new Headers({
-    "User-Agent":
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
-  });
+async function fetchAndConvertToMarkdown(url) {
+  try {
+    // Use axios to fetch the webpage content
+    const response = await axios.get(url, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+      },
+    });
 
-  const resp = await fetch(url, { headers });
+    const htmlContent = response.data;
+    const dom = new JSDOM(htmlContent);
+    const article = new Readability(dom.window.document).parse();
 
-  const text = await resp.text();
+    // Verify that the article content exists
+    if (!article || !article.content) {
+      console.error("Failed to retrieve the article content.");
+      return null;
+    }
 
-  const virtualConsole = new VirtualConsole();
-  const doc = new JSDOM(text, { virtualConsole });
+    // Convert the article content from HTML to Markdown
+    const markdown = NodeHtmlMarkdown.translate(article.content);
 
-  const reader = new Readability(doc.window.document);
-  const article = reader.parse();
-  const contentMarkdown = NodeHtmlMarkdown.translate(article.content);
-
-  console.log(
-    "CONTENT MARKDOWN: \n" + JSON.stringify(contentMarkdown, null, 4)
-  );
-
-  const markdown = removeLinksFromMarkdown(contentMarkdown);
-
-  return markdown;
-
-  const truncatedString = truncateStringToTokenCount(markdown, 3500);
-
-  // return {
-  //   prompt: [
-  //     { role: "system", content: "You are a helpful assistant." },
-  //     {
-  //       role: "user",
-  //       content:
-  //         "Can you help create a <200 word summary of the following web page based on key metrics that you can find?",
-  //     },
-  //     { role: "user", content: "The article is formatted as markdown." },
-  //     {
-  //       role: "user",
-  //       content: `The title of the page is ${article.title}.`,
-  //     },
-  //     {
-  //       role: "user",
-  //       content: `The page is as follows: \n${truncatedString}`,
-  //     },
-  //   ],
-  //   title: `${article.title}`,
-  // };
+    return markdown;
+  } catch (error) {
+    console.error("An error occurred:", error);
+    return null;
+  }
 }
 
 // function that takes a string and truncates it to a word boundary of given word count
@@ -87,7 +69,7 @@ class Response extends ResponseHelper {
     using openai (version 4.4.0), feed the prompt using "gpt-3.5-turbo" model and using openai.ChatCompletion.create return the response in the
     result field of res object
     */
-
+      console.log("COMPARE: setting up request body");
       const { prompt, links } = this.request.body;
 
       let messages = [
@@ -108,15 +90,8 @@ class Response extends ResponseHelper {
 
       for (let link of links) {
         const url = link;
-
         // const { prompt, title } = await generateChatPrompt(url);
-        const content = await generateChatPrompt(url);
-        const chatInput = {
-          model: "gpt-4",
-          messages: prompt,
-          temperature: 0.4,
-        };
-
+        const content = await fetchAndConvertToMarkdown(url);
         // const completion = await openai.chat.completions.create(chatInput);
         // console.log(JSON.stringify(completion.choices[0].message));
         // scrapedText.push(JSON.stringify(completion.choices[0].message.content));
@@ -138,7 +113,7 @@ class Response extends ResponseHelper {
       let response = await openai.chat.completions.create({
         model: "gpt-4",
         messages: messages,
-        temperature: 0,
+        temperature: 0.75,
       });
       // log the response and return the response to client with 200 status code
       console.log(response);

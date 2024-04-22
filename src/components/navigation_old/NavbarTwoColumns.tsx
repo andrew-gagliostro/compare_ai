@@ -13,7 +13,7 @@ export function NavbarTwoColumns(props: INavbarProps) {
   const router = useRouter();
 
   return (
-    <h1 className="flex flex-full w-full justify-between dark:invert">
+    <h1 className="flex flex-full w-full justify-between ">
       <div onClick={() => router.push("/")}>
         <Logo></Logo>
       </div>

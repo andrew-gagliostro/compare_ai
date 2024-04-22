@@ -5,7 +5,7 @@ import { FooterCopyright } from "../footer/FooterCopyright";
 import { FooterIconList } from "../footer/FooterIconList";
 
 const Footer = () => (
-  <div className="text-center flex flex-col w-full hwq-max-fit bg-gray-200 pt-3 pb-5 dark:invert">
+  <div className="text-center flex flex-col w-full hwq-max-fit bg-gray-200 pt-3 pb-5 ">
     <div className="max-h-fit">
       <Logo />
     </div>
