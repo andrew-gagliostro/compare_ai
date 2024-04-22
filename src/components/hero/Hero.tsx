@@ -50,6 +50,7 @@ function Hero() {
           boxSizing: "border-box",
           textAlign: "center",
           width: "100%",
+          flexGrow: 2,
         }}
         className="hero lg:mt-1"
       >
@@ -79,7 +80,6 @@ function Hero() {
             <Box>Eliminate The Noise. </Box>
             <Box>Make The Right Choice.</Box>
           </h2> */}
-        \
         <Button
           color="secondary"
           variant="contained"

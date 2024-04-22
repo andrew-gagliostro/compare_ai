@@ -33,6 +33,7 @@ import SubmissionHistory, {
   SubmissionHistoryModel,
 } from "@/models/SubmissionHistory";
 import { AuthCtx } from "@/context/AuthContext";
+import { primary } from "@/theme";
 
 function StyledForm() {
   const [prompt, setPrompt] = useState("");
@@ -161,6 +162,17 @@ function StyledForm() {
         justifyContent: "center",
       }}
     >
+      <Box
+        sx={{
+          alignSelf: "flex-start",
+          color: "secondary.main",
+          fontWeight: "bolder",
+          fontSize: "1.3rem",
+          pb: 2,
+        }}
+      >
+        Create New Comparison
+      </Box>
       <form onSubmit={handleSubmit} style={{ width: "100%" }}>
         <Box className="mb-5">
           <TextField
@@ -248,14 +260,13 @@ function StyledForm() {
         <Button
           type="submit"
           variant="contained"
-          color="primary"
-          className="bg-gray-900"
           sx={{
             display: "flex",
             maxWidth: "20%",
             justifySelf: "center",
             alignSelf: "center",
             margin: "auto",
+            backgroundColor: "secondary.main",
           }}
         >
           Submit
@@ -330,7 +341,7 @@ function StyledForm() {
       <Box
         sx={{
           display: "flex",
-          padding: 5,
+          py: 5,
           flexDirection: "column",
           height: "fit-content",
           marginTop: 2,
@@ -339,12 +350,17 @@ function StyledForm() {
           alignItems: "center",
         }}
       >
-        <Typography
-          variant="h6"
-          sx={{ marginBottom: 5, color: "text.primary" }}
+        <Box
+          sx={{
+            alignSelf: "flex-start",
+            color: "secondary.main",
+            fontWeight: "bolder",
+            fontSize: "1.3rem",
+            pb: 2,
+          }}
         >
-          History
-        </Typography>
+          Query History
+        </Box>
         <TableContainer
           component={Paper}
           sx={{ borderRadius: 2, overflow: "hidden", width: "100%" }}

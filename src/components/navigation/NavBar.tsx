@@ -15,7 +15,6 @@ export function NavBar() {
     <Box
       sx={{
         display: "flex",
-        flexGrow: 2,
         width: "100%",
         minHeight: "fit-content",
         maxHeight: "fit-content",
