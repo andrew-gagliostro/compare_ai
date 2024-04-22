@@ -115,9 +115,26 @@ export default function MenuListComposition() {
                     id="composition-menu"
                     aria-labelledby="composition-button"
                     onKeyDown={handleListKeyDown}
+                    disablePadding
                   >
                     {user ? (
-                      <>
+                      <Box>
+                        <MenuItem
+                          onClick={() => {
+                            handleClose;
+                            router.push("/");
+                          }}
+                        >
+                          Home
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => {
+                            handleClose;
+                            router.push("/compare");
+                          }}
+                        >
+                          Compare
+                        </MenuItem>
                         <MenuItem
                           onClick={() => {
                             handleClose;
@@ -126,9 +143,25 @@ export default function MenuListComposition() {
                         >
                           Logout
                         </MenuItem>
-                      </>
+                      </Box>
                     ) : (
-                      <>
+                      <Box>
+                        <MenuItem
+                          onClick={() => {
+                            handleClose;
+                            router.push("/");
+                          }}
+                        >
+                          Home
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => {
+                            handleClose;
+                            router.push("/compare");
+                          }}
+                        >
+                          Compare
+                        </MenuItem>
                         <MenuItem
                           onClick={() => {
                             handleClose;
@@ -137,7 +170,7 @@ export default function MenuListComposition() {
                         >
                           Sign In / Sign Up
                         </MenuItem>
-                      </>
+                      </Box>
                     )}
                   </MenuList>
                 </ClickAwayListener>

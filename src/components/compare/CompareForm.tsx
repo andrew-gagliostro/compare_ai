@@ -47,8 +47,13 @@ function StyledForm() {
     const fetchUserHistory = async () => {
       try {
         const res = await axios.get(`/api/userHistory`); // replace with the right endpoint
-        setHistory(res.data.result);
-        console.log(JSON.stringify(res.data.result));
+        // Sort the history from most recent to oldest based on the createdAt timestamp
+        const sortedHistory = res.data.result.sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        setHistory(sortedHistory); // Set the sorted history
+        console.log(JSON.stringify(sortedHistory)); // Log sorted data
       } catch (error) {
         console.log(error);
       }
@@ -329,6 +334,9 @@ function StyledForm() {
           flexDirection: "column",
           height: "fit-content",
           marginTop: 2,
+          width: "100%",
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
         <Typography
@@ -339,10 +347,10 @@ function StyledForm() {
         </Typography>
         <TableContainer
           component={Paper}
-          sx={{ borderRadius: 2, overflow: "hidden" }}
+          sx={{ borderRadius: 2, overflow: "hidden", width: "100%" }}
         >
           <Table sx={{ minWidth: 650 }} aria-label="submission history table">
-            <TableHead sx={{ backgroundColor: "primary.main" }}>
+            <TableHead sx={{ backgroundColor: "secondary.main" }}>
               <TableRow>
                 <TableCell sx={{ color: "common.white", fontWeight: "bold" }}>
                   Prompt
