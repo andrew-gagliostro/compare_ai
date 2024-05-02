@@ -55,7 +55,6 @@ function removeLinksFromMarkdown(text: string) {
   // Replace all link occurrences with the link text
   let regex = /\[([^\]]+)]\(([^)]+)\)/g;
   text = text.replace(regex, "$1");
-
   return text;
 }
 
@@ -90,11 +89,9 @@ class Response extends ResponseHelper {
 
       for (let link of links) {
         const url = link;
-        // const { prompt, title } = await generateChatPrompt(url);
+
         const content = await fetchAndConvertToMarkdown(url);
-        // const completion = await openai.chat.completions.create(chatInput);
-        // console.log(JSON.stringify(completion.choices[0].message));
-        // scrapedText.push(JSON.stringify(completion.choices[0].message.content));
+
         scrapedText.push(JSON.stringify(content));
       }
 
@@ -103,15 +100,10 @@ class Response extends ResponseHelper {
         content: JSON.stringify(scrapedText),
       });
 
-      // messages.push({
-      //   role: "user",
-      //   content: JSON.stringify(scrapedText),
-      // });
-
       // scrape text from https links and add each to new array of strings called scrapedText
 
       let response = await openai.chat.completions.create({
-        model: "gpt-4",
+        model: "gpt-4-turbo",
         messages: messages,
         temperature: 0.75,
       });

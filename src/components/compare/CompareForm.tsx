@@ -116,6 +116,7 @@ function StyledForm() {
       let temp = res.data.result;
       //remove double quotes from temp string
       temp = temp.replace(/['"]+/g, "");
+      temp = temp.replace(/^"|"$/g, "");
       setResponse(temp);
     } catch (error) {
       console.log(error);
@@ -125,13 +126,16 @@ function StyledForm() {
       try {
         // change the api endpoint to the correct one
         const session = await getSession();
+        let temp = res.data.result;
+        temp = temp.replace(/['"]+/g, "");
+        temp = temp.replace(/^"|"$/g, "");
         await axios.post(`/api/userHistory`, {
           prompt: prompt,
           links: links,
-          response: res.data.result,
+          response: temp,
         });
         let newHistory = history.concat([
-          { prompt: prompt, links: links, response: res.data.result },
+          { prompt: prompt, links: links, response: temp },
         ]);
         setHistory(newHistory);
       } catch (error) {
@@ -144,7 +148,7 @@ function StyledForm() {
     const historyItem = history[index];
     setPrompt(historyItem.prompt || "");
     setLinks(historyItem.links || []);
-    setResponse(historyItem.response);
+    setResponse(historyItem.response.replace(/^"|"$/g, ""));
   };
 
   return (

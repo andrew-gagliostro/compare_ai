@@ -16,13 +16,13 @@
     "Noto Color Emoji";
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 122, 128, 141;
-    --background-start-rgb: 50, 50, 50; /* dark gray */
-    --background-end-rgb: 0, 0, 0; /* black */
+    --background-start-rgb: 50, 50, 50;
+    --background-end-rgb: 0, 0, 0;
   }
-}
+} */
 
 body {
   color: rgb(var(--foreground-rgb));
