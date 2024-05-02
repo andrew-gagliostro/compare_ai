@@ -367,7 +367,25 @@ function StyledForm() {
         </Box>
         <TableContainer
           component={Paper}
-          sx={{ borderRadius: 2, overflow: "hidden", width: "100%" }}
+          sx={{
+            borderRadius: 2,
+            overflowX: "auto", // Allows horizontal scrolling
+            width: "100%",
+            // Ensures table is not wider than the screen on mobile devices
+            maxWidth: {
+              xs: "100vw", // Adjust for extra small screens
+              sm: "100%", // Adjust for small screens and up
+            },
+            // Ensures the table is fully visible on small devices by subtracting potential margins/paddings
+            marginLeft: { xs: "-16px", sm: "auto" },
+            marginRight: { xs: "-16px", sm: "auto" },
+            "&::-webkit-scrollbar": {
+              height: "6px", // Adjust scrollbar height for aesthetics
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "rgba(0,0,0,0.3)", // Adjust scrollbar color for visibility
+            },
+          }}
         >
           <Table sx={{ minWidth: 650 }} aria-label="submission history table">
             <TableHead sx={{ backgroundColor: "secondary.main" }}>
@@ -393,6 +411,10 @@ function StyledForm() {
                         backgroundColor: "action.hover",
                       },
                       "&:hover": { backgroundColor: "action.selected" },
+                      borderBottom: "2px solid gray",
+                      "&:not(:last-child)": {
+                        borderBottom: "2px solid gray", // Use Material-UI's default divider color
+                      },
                     }}
                     onDoubleClick={() => handleLoadHistory(index)}
                   >
