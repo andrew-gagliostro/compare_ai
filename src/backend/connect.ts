@@ -24,35 +24,46 @@ if (!MONGO_PASSWORD) {
 }
 
 const mutex = new Mutex();
-/**
- * Global is used here to maintain a cached connection across hot reloads
- * in development. This prevents connections growing exponentially
- * during API Route usage.
- */
 // @ts-ignore
 let cached = global.mongoose;
 
 if (!cached) {
-  cached = { conn: null, promise: null };
+  cached = { conn: null, promise: null, mongoServer: null };
   // @ts-ignore
-  global.mongoose = { conn: null, promise: null };
+  global.mongoose = cached;
 }
 
-let seeded = false;
-
-const connectToMongoDB = async () => {
+const connect = async () => {
   const release = await mutex.acquire();
+
   try {
+    // Check if we're already connected or currently connecting to any kind of DB
     if (cached.conn) {
       return cached.conn;
     }
 
     if (!cached.promise) {
-      const connectionString = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_DB}?authsource=admin`;
+      let connectionString;
 
-      cached.promise = mongoose.connect(connectionString).then((res) => res);
-      console.log(connectionString);
-      console.trace("CONNECTED TO MONGO");
+      if (process.env.USE_MOCK_DB) {
+        console.log("USING MOCK DB");
+        // If using a mock DB, initiate MongoMemoryServer
+        if (!cached.mongoServer) {
+          cached.mongoServer = await MongoMemoryServer.create();
+        }
+        connectionString = cached.mongoServer.getUri();
+      } else {
+        console.log("USING REAL DB");
+        // Else construct the real DB connection string
+        connectionString = `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}/${process.env.MONGO_DB}?authSource=admin`;
+      }
+
+      cached.promise = mongoose.connect(connectionString).then((mongoose) => {
+        console.log(
+          `Connected to ${process.env.USE_MOCK_DB ? "Mock" : "Mongo"} DB`
+        );
+        return mongoose;
+      });
     }
 
     cached.conn = await cached.promise;
@@ -60,25 +71,6 @@ const connectToMongoDB = async () => {
   } finally {
     release();
   }
-};
-
-const connect = async () => {
-  // Determine whether to use the real database or the mock based on an environment variable or any other condition
-  if (process.env.USE_MOCK_DB) {
-    console.log("USING MOCK DB");
-    return connectToMockDB();
-  } else {
-    console.log("USING FULL DB");
-    return connectToMongoDB();
-  }
-};
-
-const connectToMockDB = async () => {
-  const mongoServer = await MongoMemoryServer.create();
-  const uri = mongoServer.getUri();
-  await mongoose.connect(uri);
-  console.log("Connected to Mock MongoDB");
-  return mongoose.connection;
 };
 
 export default connect;
