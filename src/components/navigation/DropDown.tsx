@@ -7,7 +7,7 @@ import Popper from "@mui/material/Popper";
 import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 import Stack from "@mui/material/Stack";
-import { Box, Menu } from "@mui/material";
+import { Avatar, Box, Menu } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
@@ -118,7 +118,7 @@ export default function MenuListComposition() {
                     onKeyDown={handleListKeyDown}
                     disablePadding
                   >
-                    {user ? (
+                    {user && user.picture ? (
                       <Box>
                         <MenuItem
                           onClick={() => {
@@ -142,7 +142,18 @@ export default function MenuListComposition() {
                             router.push("/api/auth/signout");
                           }}
                         >
-                          Logout
+                          <Avatar
+                            src={user.picture}
+                            alt="User picture"
+                            sx={{ width: 24, height: 24, marginRight: 2 }} // Adjust size as needed
+                            onClick={handleToggle}
+                            aria-controls={
+                              open ? "composition-menu" : undefined
+                            }
+                            aria-expanded={open ? "true" : undefined}
+                            aria-haspopup="true"
+                          />
+                          Sign Out
                         </MenuItem>
                       </Box>
                     ) : (
