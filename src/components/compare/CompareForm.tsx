@@ -329,6 +329,21 @@ function StyledForm() {
                   color: "black",
                   fontSize: "medium",
                   textAlign: "left",
+                  overflowX: "auto", // Allows horizontal scrolling
+                  // Ensures table is not wider than the screen on mobile devices
+                  maxWidth: {
+                    xs: "100vw", // Adjust for extra small screens
+                    sm: "100%", // Adjust for small screens and up
+                  },
+                  // Ensures the table is fully visible on small devices by subtracting potential margins/paddings
+                  marginLeft: { xs: "-16px", sm: "auto" },
+                  marginRight: { xs: "-16px", sm: "auto" },
+                  "&::-webkit-scrollbar": {
+                    height: "6px", // Adjust scrollbar height for aesthetics
+                  },
+                  "&::-webkit-scrollbar-thumb": {
+                    backgroundColor: "rgba(0,0,0,0.3)", // Adjust scrollbar color for visibility
+                  },
                 }}
               >
                 <ReactMarkdown
