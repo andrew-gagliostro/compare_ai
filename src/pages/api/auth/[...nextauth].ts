@@ -61,9 +61,7 @@ export const authOptions: NextAuthOptions = {
           const user = await User.findOne({
             email: tempProfile.email,
           });
-            console.log(
-              "FETCHED USER: " + JSON.stringify(user, null, 4)
-            );
+          console.log("FETCHED USER: " + JSON.stringify(user, null, 4));
           if (user) {
             newToken.profile = {
               name: user.name,
@@ -87,7 +85,7 @@ export const authOptions: NextAuthOptions = {
               "FETCHED USER: " + JSON.stringify(fetchedUser, null, 4)
             );
             newToken.profile = {
-              name : user.name,
+              name: user.name,
               picture: user.picture,
               email: user?.email,
             };
@@ -108,6 +106,12 @@ export const authOptions: NextAuthOptions = {
         return newSession;
       }
     ),
+  },
+  theme: {
+    colorScheme: "light", // "auto" | "dark" | "light"
+    brandColor: "#857D9E", // Hex color code
+    logo: "", // Absolute URL to image
+    buttonText: "", // Hex color code
   },
 };
 

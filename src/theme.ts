@@ -21,6 +21,7 @@ const theme = createTheme({
       main: "#f44336",
       contrastText: "#fff",
     },
+    divider: "#857D9E",
   },
   typography: {
     fontFamily: [

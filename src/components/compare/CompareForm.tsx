@@ -18,6 +18,9 @@ import {
   Container,
 } from "@mui/material";
 
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore"; // For expand icon
+import ExpandLessIcon from "@mui/icons-material/ExpandLess"; // For collapse icon
+
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
@@ -42,6 +45,15 @@ function StyledForm() {
   const [response, setResponse] = useState<any>(null);
   const [history, setHistory] = useState<Partial<SubmissionHistoryModel>[]>([]); // Add state variable for user history
   const { getSession } = React.useContext(AuthCtx);
+  const [expandedRow, setExpandedRow] = useState(null);
+
+  const handleRowExpandToggle = (index) => {
+    if (expandedRow === index) {
+      setExpandedRow(null); // Collapse the currently expanded row
+    } else {
+      setExpandedRow(index); // Expand the selected row
+    }
+  };
 
   useEffect(() => {
     // Fetch user's submission history on component mount
@@ -312,8 +324,7 @@ function StyledForm() {
                 color: "white",
                 fontSize: "medium",
                 textAlign: "left",
-                background:
-                  "linear-gradient(to bottom,  rgba(203,203,203,255), rgba(203,203,203,255))",
+                background: "linear-gradient(to bottom,  #e0e0e0, #e6e6e6)",
                 borderRadius: 2,
               }}
             >
@@ -404,15 +415,41 @@ function StyledForm() {
         >
           <Table sx={{ minWidth: 650 }} aria-label="submission history table">
             <TableHead sx={{ backgroundColor: "secondary.main" }}>
-              <TableRow>
-                <TableCell sx={{ color: "common.white", fontWeight: "bold" }}>
+              <TableRow sx={{ textAlign: "center" }}>
+                <TableCell
+                  sx={{
+                    color: "common.white",
+                    fontWeight: "bold",
+                    fontSize: "1.2rem",
+                    textAlign: "center",
+                    borderRight: "1px solid #504b5f",
+                    borderBottom: "1px solid #504b5f",
+                  }}
+                >
                   Prompt
                 </TableCell>
-                <TableCell sx={{ color: "common.white", fontWeight: "bold" }}>
-                  Links
-                </TableCell>
-                <TableCell sx={{ color: "common.white", fontWeight: "bold" }}>
+                <TableCell
+                  sx={{
+                    color: "common.white",
+                    fontWeight: "bold",
+                    fontSize: "1.2rem",
+                    textAlign: "center",
+                    borderRight: "1px solid #504b5f",
+                    borderBottom: "1px solid #504b5f",
+                  }}
+                >
                   Response
+                </TableCell>
+                <TableCell
+                  sx={{
+                    color: "common.white",
+                    fontWeight: "bold",
+                    fontSize: "1.2rem",
+                    textAlign: "center",
+                    borderBottom: "1px solid #504b5f",
+                  }}
+                >
+                  Links
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -426,9 +463,8 @@ function StyledForm() {
                         backgroundColor: "action.hover",
                       },
                       "&:hover": { backgroundColor: "action.selected" },
-                      borderBottom: "2px solid gray",
-                      "&:not(:last-child)": {
-                        borderBottom: "2px solid gray", // Use Material-UI's default divider color
+                      "&:last-child": {
+                        borderBottom: "none",
                       },
                     }}
                     onDoubleClick={() => handleLoadHistory(index)}
@@ -441,6 +477,9 @@ function StyledForm() {
                         maxWidth: 200,
                         overflow: "hidden",
                         textOverflow: "ellipsis",
+                        verticalAlign: "top",
+                        borderRight: "1px solid #504b5f",
+                        borderBottom: "1px solid #504b5f",
                       }}
                     >
                       {item.prompt}
@@ -448,20 +487,77 @@ function StyledForm() {
                     <TableCell
                       sx={{
                         color: "text.primary",
-                        maxWidth: 200,
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
+                        borderRight: "1px solid #504b5f",
+                        borderBottom: "1px solid #504b5f",
+                        "&:last-child": {
+                          borderRight: "none",
+                        },
                       }}
                     >
-                      {item.links.join(", ")}
-                    </TableCell>
-                    <TableCell sx={{ color: "text.primary" }}>
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
                         rehypePlugins={[rehypeSanitize, rehypePrism]}
                       >
                         {item.response}
                       </ReactMarkdown>
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        color: "text.primary",
+                        maxWidth: 400,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        alignItems: "top",
+                        maxHeight: "min-content",
+                        verticalAlign: "top",
+                        borderBottom: "1px solid #504b5f",
+                      }}
+                    >
+                      {item.links && item.links.length > 0 && (
+                        <>
+                          <IconButton
+                            onClick={() => handleRowExpandToggle(index)}
+                            size="small"
+                            sx={{
+                              alignSelf: "flex-start",
+                              marginBottom: "4px",
+                              transform:
+                                expandedRow === index
+                                  ? "rotate(0deg)"
+                                  : "rotate(-90deg)", // Rotates the icon
+                              transition: "transform 0.3s", // Smooth transition for the rotation
+                            }}
+                          >
+                            <ExpandMoreIcon />
+                          </IconButton>
+                          {expandedRow === index && (
+                            <Box sx={{ whiteSpace: "pre-line" }}>
+                              {item.links.map((link, index) => (
+                                <Typography
+                                  variant="body2"
+                                  key={index}
+                                  sx={{ display: "block", marginBottom: 2 }}
+                                >
+                                  <a
+                                    href={link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    {link}
+                                  </a>
+                                  {index !== item.links.length - 1 && (
+                                    <>
+                                      <br />
+                                      <br />
+                                    </>
+                                  )}{" "}
+                                  {/* Add double line breaks except after the last link */}
+                                </Typography>
+                              ))}
+                            </Box>
+                          )}
+                        </>
+                      )}
                     </TableCell>
                   </TableRow>
                 ) : null

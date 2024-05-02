@@ -79,9 +79,10 @@ class Response extends ResponseHelper {
         {
           role: "system",
           content:
-            "You will be provided with a set of messages, where each message represents text from a web page. Your task is to return a comparison of the different items/objects mentioned in the messages in \
+            "You will be provided with a set of messages, where each message represents text from a web page. Your task is to return a comparison/analysis (depending on the above user prompt) based on the content included in the below messages \
+            (which is potentially unstructured content pulled from web pages and articles) and in \
            the context of the previous prompt question. For example, if the prompt question is 'What is the best laptop for me?', and the messages are text from webpages that contain data regarding different laptops \
-           please provide a long form as well as a table comparing the objects using markdown",
+           please provide a long-form response to their prompt as well as a table comparing the different objects if appropriate (using markdown for the formatting of the entire response, including the table)",
         },
       ];
 
