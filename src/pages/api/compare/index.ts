@@ -128,6 +128,10 @@ class Response extends ResponseHelper {
   }
 }
 
+export const config = {
+  maxDuration: 200,
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
