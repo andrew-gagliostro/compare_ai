@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import React, { Component } from "react";
+import React, { Component, ReactElement } from "react";
 import HomeLinks from "@/components/layout/HomeLinks";
 import { Hero } from "@/components/hero/Hero";
 import { NavbarTwoColumns } from "@/components/navigation/NavbarTwoColumns";
@@ -10,8 +10,10 @@ import { NavBar } from "@/components/navigation/NavBar";
 import { Footer } from "@/components/footer/Footer";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import theme from "@/theme";
+import { NextPageWithLayout } from "./_app";
+import MainLayout from "@/layout/Main";
 
-export default function Home() {
+const Home: NextPageWithLayout = () => {
   return (
     <>
       <CssBaseline />
@@ -22,4 +24,8 @@ export default function Home() {
       </main>
     </>
   );
-}
+};
+
+Home.getLayout = (page: ReactElement) => <MainLayout>{page}</MainLayout>;
+
+export default Home;

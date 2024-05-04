@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { Component, useEffect } from "react";
 import Head from "next/head";
 import { ThemeProvider } from "@mui/material";
 import { CssBaseline } from "@mui/material";
@@ -27,6 +27,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
   }, []);
+  const getLayout = Component.getLayout || ((page) => page);
 
   return (
     <React.Fragment>
@@ -42,7 +43,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
           <ThemeProvider theme={theme}>
             {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
             <CssBaseline />
-            <Component {...pageProps} />
+            {getLayout(<Component {...pageProps} />)}
           </ThemeProvider>
         </AuthContext>
       </SessionProvider>
