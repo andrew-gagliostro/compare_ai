@@ -12,22 +12,27 @@ const { Readability } = require("@mozilla/readability");
 const { NodeHtmlMarkdown } = require("node-html-markdown");
 import type { NextApiRequest, NextApiResponse } from "next";
 import ResponseHelper from "@/backend/responseHelper";
+import connect from "@/backend/connect";
 
 class SubmissionHistoryHandler extends ResponseHelper {
   async post(): Promise<any> {
     /* input: user_id, prompt, links, response. */
     try {
+      let user = { _id: "unidentified" } as any;
       if (!this.session || !this.session.user) {
-        return {
-          status: 403,
-          success: false,
-          message: "Forbidden",
-        };
+        // return {
+        //   status: 403,
+        //   success: false,
+        //   message: "Forbidden",
+        // };
+        user = { _id: "unidentified" };
+      } else {
+        user = (await User.findOne({
+          name: this.session.user.name,
+        })) as UserModel;
       }
 
-      const user = await User.findOne({name: this.session.user.name});
-
-      const body = {...this.request.body, user_id: user._id};
+      const body = { ...this.request.body, user_id: user._id };
       const submissionHistory = new SubmissionHistory(body);
 
       await submissionHistory.save();
@@ -49,7 +54,6 @@ class SubmissionHistoryHandler extends ResponseHelper {
 
   async get(): Promise<any> {
     try {
-
       if (!this.session || !this.session.user) {
         return {
           status: 403,
@@ -81,11 +85,11 @@ class SubmissionHistoryHandler extends ResponseHelper {
   }
 }
 
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  await connect();
   const response = new SubmissionHistoryHandler(req, res);
   await response.send();
 }

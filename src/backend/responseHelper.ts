@@ -1,13 +1,28 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
 import safeObject from "./safeObject";
-import { Session, getServerSession } from "next-auth";
+import { Awaitable, Session, getServerSession } from "next-auth";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 
 export interface Response {
   success: boolean;
   status: number;
   message?: any;
+}
+
+function Log(name: string, callback: Awaitable<any>) {
+  return async function (this: any, ...args: any[]) {
+    console.log(
+      `Calling ${name} with Following Arguments:\n ${JSON.stringify(
+        args,
+        null,
+        4
+      )}`
+    );
+    const result = await callback.apply(this, args);
+    console.log(`${name} RETURNED:\n`, JSON.stringify(result, null, 4));
+    return result;
+  };
 }
 
 class ResponseHelper {
@@ -97,8 +112,16 @@ class ResponseHelper {
   }
 
   async send(): Promise<void | true> {
-        await this.getSession();
-        
+    await this.getSession();
+
+    // Log the incoming request
+    console.log("Incoming Request:", {
+      method: this.request.method,
+      url: this.request.url,
+      headers: this.request.headers,
+      body: this.request.body, // Be cautious logging sensitive information
+    });
+
     let response: Response = {
       status: 200,
       success: true,
@@ -123,6 +146,9 @@ class ResponseHelper {
       default:
         response = this.methodNotAllowed();
     }
+
+    // Log the response about to be sent
+    console.log("Sending Response:", JSON.stringify(response, null, 2));
 
     this.response.status(response.status).json(response);
 

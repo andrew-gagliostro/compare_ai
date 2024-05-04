@@ -44,7 +44,6 @@ function StyledForm() {
   const [newLink, setNewLink] = useState("");
   const [response, setResponse] = useState<any>(null);
   const [history, setHistory] = useState<Partial<SubmissionHistoryModel>[]>([]); // Add state variable for user history
-  const { getSession } = React.useContext(AuthCtx);
   const [expandedRow, setExpandedRow] = useState(null);
 
   const handleRowExpandToggle = (index) => {
@@ -136,8 +135,6 @@ function StyledForm() {
 
     if (res) {
       try {
-        // change the api endpoint to the correct one
-        const session = await getSession();
         let temp = res.data.result;
         temp = temp.replace(/['"]+/g, "");
         temp = temp.replace(/^"|"$/g, "");
