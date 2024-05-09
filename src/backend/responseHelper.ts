@@ -115,12 +115,12 @@ class ResponseHelper {
     await this.getSession();
 
     // Log the incoming request
-    console.log("Incoming Request:", {
-      method: this.request.method,
-      url: this.request.url,
-      headers: this.request.headers,
-      body: this.request.body, // Be cautious logging sensitive information
-    });
+    // console.log("Incoming Request:", {
+    //   method: this.request.method,
+    //   url: this.request.url,
+    //   headers: this.request.headers,
+    //   body: this.request.body, // Be cautious logging sensitive information
+    // });
 
     let response: Response = {
       status: 200,
@@ -148,7 +148,7 @@ class ResponseHelper {
     }
 
     // Log the response about to be sent
-    console.log("Sending Response:", JSON.stringify(response, null, 2));
+    // console.log("Sending Response:", JSON.stringify(response, null, 2));
 
     this.response.status(response.status).json(response);
 
