@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import {
   TextField,
   Button,
@@ -38,13 +38,19 @@ import SubmissionHistory, {
 import { AuthCtx } from "@/context/AuthContext";
 import { primary } from "@/theme";
 
+interface FileWithPreview extends File {
+  preview: string;
+}
+
 function StyledForm() {
   const [prompt, setPrompt] = useState("");
   const [links, setLinks] = useState<string[]>([]);
+  const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [newLink, setNewLink] = useState("");
   const [response, setResponse] = useState<any>(null);
   const [history, setHistory] = useState<Partial<SubmissionHistoryModel>[]>([]); // Add state variable for user history
   const [expandedRow, setExpandedRow] = useState(null);
+  const fileInputRef = useRef(null);
 
   const handleRowExpandToggle = (index) => {
     if (expandedRow === index) {
@@ -73,11 +79,33 @@ function StyledForm() {
     fetchUserHistory();
   }, []);
 
+  //cleanup on files to avoid memory leaks
+  useEffect(() => {
+    // Cleanup previews
+    return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
+  }, [files]);
+
   const handleAddLink = () => {
     if (newLink.trim() !== "") {
       setLinks([...links, newLink]);
       setNewLink("");
     }
+  };
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      const filesArray = Array.from(event.target.files).map((file) =>
+        Object.assign(file, {
+          preview: URL.createObjectURL(file),
+        })
+      );
+      // Update the state with the new files, appending them to any existing files
+      setFiles((prevFiles) => [...prevFiles, ...filesArray]);
+    }
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
 
   const handleLinkInputKeyPress = (e: any) => {
@@ -92,32 +120,32 @@ function StyledForm() {
     setLinks(updatedLinks);
   };
 
+  const handleChooseFilesClick = () => {
+    // Programmatically "click" the file input when the button is clicked
+    fileInputRef.current.click();
+  };
+
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     setResponse("Loading...");
-    // Define your API call here
-    const apiName = "compareapi";
-    const path = "/api";
-    //change below to body parameters
-    const myInit = {
-      // Set your headers and other options here
-      // ...
-      body: {
-        prompt: prompt,
-        links: links,
-      },
 
-      //add prompt and links to body
-    };
+    // FormData can handle file uploads
+    const formData = new FormData();
+    formData.append("prompt", prompt);
+    if (links.length)
+      links.forEach((link, index) => formData.append(`links[${index}]`, link));
+    if (files && files.length) {
+      files.forEach((file) => {
+        formData.append("files", file);
+      });
+    }
 
     let res = null as any;
-
     try {
-      // let res = await API.post(apiName, path, myInit);
-
-      res = await axios.post(`/api/compare`, {
-        prompt: prompt,
-        links: links,
+      res = await axios.post(`/api/compare`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
       console.log("GOT RESPONSE");
       /*
@@ -200,6 +228,58 @@ function StyledForm() {
             }}
           />
         </Box>
+        <Box sx={{ marginBottom: 2, display: "flex" }}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              alignItems: "center",
+              alignSelf: "flex-start",
+              mb: 1,
+              mr: 3,
+            }}
+          >
+            <Typography fontWeight={"bold"}>Upload CSV Files</Typography>
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              onChange={handleFileChange}
+              accept=".csv"
+              style={{ display: "none" }}
+            />
+            <Button
+              variant="contained"
+              sx={{
+                display: "flex",
+                backgroundColor: "secondary.main",
+              }}
+              onClick={handleChooseFilesClick}
+            >
+              Choose Files
+            </Button>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              maxWidth: "50%",
+              flexDirection: "column",
+              alignSelf: "flex-start",
+            }}
+          >
+            {files.map((file, index) => (
+              <Box
+                key={index}
+                sx={{ display: "flex", alignItems: "center", gap: 2 }}
+              >
+                {file.name}
+                <IconButton onClick={() => handleRemoveFile(index)}>
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
+            ))}
+          </Box>
+        </Box>
         <Box sx={{ marginBottom: 5 }}>
           <TextField
             label="Add Link"
@@ -221,7 +301,6 @@ function StyledForm() {
           />
         </Box>
         <Box
-          className="mb-5"
           sx={{
             color: "gray",
             maxWidth: "100%",
@@ -233,6 +312,7 @@ function StyledForm() {
           }}
         >
           <List
+            disablePadding
             className="mb-5"
             sx={{
               color: "gray",
