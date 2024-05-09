@@ -16,7 +16,7 @@ import puppeteer from "puppeteer";
 import { Readability } from "@mozilla/readability";
 import TurndownService from "turndown";
 import { ChatCompletionMessageParam } from "openai/resources";
-import { chromium } from "playwright";
+import { parse } from "csv-parse/sync";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -27,79 +27,58 @@ export const config = {
   },
 };
 
-// async function fetchAndConvertToMarkdown(url) {
-//   try {
-//     // Use axios to fetch the webpage content
-//     const response = await axios.get(url, {
-//       headers: {
-//         "User-Agent":
-//           "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
-//       },
-//     });
+function getRandomUserAgent() {
+  const userAgents = [
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.2 Safari/605.1.15",
+    // Add more user agents as needed
+  ];
+  return userAgents[Math.floor(Math.random() * userAgents.length)];
+}
 
-//     const htmlContent = response.data;
-//     const dom = new JSDOM(htmlContent);
-//     const article = new Readability(dom.window.document).parse();
+// Helper to simulate human-like delays
+function delay(duration) {
+  return new Promise((resolve) => setTimeout(resolve, duration));
+}
 
-//     // Verify that the article content exists
-//     if (!article || !article.content) {
-//       console.error("Failed to retrieve the article content.");
-//       return null;
-//     }
-
-//     // Convert the article content from HTML to Markdown
-//     const markdown = NodeHtmlMarkdown.translate(article.content);
-
-//     return markdown;
-//   } catch (error) {
-//     console.error("An error occurred:", error);
-//     return null;
-//   }
-// }
-
-async function fetchAndConvertToMarkdown(url: string): Promise<string | null> {
-  const browser = await chromium.launch({ headless: true }); // Make sure headless is set to true for production environments
+// Renamed and updated fetch function
+async function fetchReadableUrlContent(url) {
   try {
-    const context = await browser.newContext({
-      userAgent:
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.0.0 Safari/537.36",
-      geolocation: { latitude: 59.95, longitude: 30.31667 },
-      permissions: ["geolocation"],
-    });
-    const page = await context.newPage();
+    await delay(1000 + Math.random() * 2000); // Random delay between 1s and 3s
 
-    // Disguise headless state
-    await context.addInitScript(() => {
-      Object.defineProperty(navigator, "webdriver", {
-        get: () => false,
-      });
-    });
+    const axiosConfig = {
+      headers: {
+        "User-Agent": getRandomUserAgent(),
+        Accept:
+          "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Accept-Encoding": "gzip, deflate, br",
+        DNT: "1", // Do Not Track Request Header
+        Connection: "keep-alive",
+        "Upgrade-Insecure-Requests": "1",
+      },
+    };
 
-    await page.goto(url, { waitUntil: "domcontentloaded" });
+    // Use axios to fetch the webpage content
+    const response = await axios.get(url, axiosConfig);
 
-    // Simulate human-like delays
-    await page.waitForTimeout(1000); // wait for 1 second
+    const htmlContent = response.data;
+    const dom = new JSDOM(htmlContent);
+    const article = new Readability(dom.window.document).parse();
 
-    // Get the entire HTML of the page
-    const htmlContent = await page.content();
-
-    console.log("HTMLCONTENT: " + JSON.stringify(htmlContent));
-
-    // Use JSDOM and Readability to parse and extract meaningful content
-    const dom = new JSDOM(htmlContent, { url });
-    const reader = new Readability(dom.window.document);
-    const article = reader.parse();
-
-    await browser.close();
-
-    if (article && article.textContent) {
-      console.log("ARTICLE: " + JSON.stringify(article));
-      return article.textContent;
+    // Verify that the article content exists
+    if (!article || !article.content) {
+      console.error("Failed to retrieve the article content.");
+      return null;
     }
-    return null;
+
+    // Convert the article content from HTML to plain text or simpler markdown
+    const markdown = NodeHtmlMarkdown.translate(article.content);
+
+    return markdown;
   } catch (error) {
-    console.error("Error loading the page:", error);
-    await browser.close();
+    console.error("An error occurred:", error);
     return null;
   }
 }
@@ -127,6 +106,29 @@ async function parseForm(
       else resolve({ fields, files });
     });
   });
+}
+
+async function parseCsvFile(filePath: string): Promise<string> {
+  // Read the entire file content
+  try {
+    const fileContent = await fs.promises.readFile(filePath);
+
+    // Parse the CSV without converting to JSON object, each record will be an array of strings
+    const records = parse(fileContent, {
+      skip_empty_lines: true,
+      trim: true,
+      bom: true,
+      relax_column_count: true,
+      relax_quotes: true,
+      skipRecordsWithEmptyValues: true,
+    });
+
+    // Join each row with a comma, and then join rows with newlines to form a string that looks like a regular CSV
+    return records.map((row) => row.join(",")).join("\n");
+  } catch (e) {
+    console.error("Unable to parse CSV file", e);
+    return "";
+  }
 }
 
 class Response extends ResponseHelper {
@@ -162,17 +164,10 @@ class Response extends ResponseHelper {
         };
       }
 
-      if (files.files) {
-        const uploadedFiles = Array.isArray(files.files)
-          ? files.files
-          : [files.files];
-        filePaths = uploadedFiles.map((file) => file.filepath);
-      }
-
       // Now you have prompt as a string, links as a string array, and filePaths as an array of the paths to the saved files
       console.log({ prompt, links, filePaths });
 
-      let messages = [
+      let messages: any[] = [
         {
           role: "user",
           content: prompt,
@@ -180,10 +175,9 @@ class Response extends ResponseHelper {
         {
           role: "system",
           content:
-            "You will be provided with a set of messages, where each message represents text from a web page. Your task is to return a comparison/analysis (depending on the above user prompt) based on the content included in the below messages \
-            (which is potentially unstructured content pulled from web pages and articles) and in \
-           the context of the previous prompt question. For example, if the prompt question is 'What is the best laptop for me?', and the messages are text from webpages that contain data regarding different laptops \
-           please provide a long-form response to their prompt as well as a table comparing the different objects if appropriate (using markdown for the formatting of the entire response, including the table)",
+            "You will be provided with a set of messages, where each message represents text scraped from a web page and/or messages parsed from csv files (denoted with names WEB or CSV). Your task is to return a comparison/analysis (depending on the above user prompt) based on the content included in the upcoming low messages \
+           (which is potentially unstructured content pulled from web pages and articles) and in the context of the previous prompt question. \
+Please provide a long-form response to their prompt as well as a table comparing the different objects if appropriate (using markdown for the formatting of the entire response, including the table)",
         },
       ];
 
@@ -192,8 +186,32 @@ class Response extends ResponseHelper {
       for (let link of links) {
         const url = link;
 
-        const content = await fetchAndConvertToMarkdown(url);
-        scrapedText.push(JSON.stringify(content));
+        const content = await fetchReadableUrlContent(url);
+        messages.push({
+          role: "user",
+          content: content,
+          name: "WEB",
+        });
+      }
+
+      if (files.files) {
+        const uploadedFiles = Array.isArray(files.files)
+          ? files.files
+          : [files.files];
+        for (let file of uploadedFiles) {
+          const csvContent = await parseCsvFile(file.filepath);
+          messages.push({
+            role: "user",
+            content: csvContent,
+            name: "CSV",
+          });
+          try {
+            await fs.promises.unlink(file.filepath);
+            console.log(`Unlinked filepath: ${file.filepath}`);
+          } catch (e) {
+            console.error(`Unable to unlink filepath: ${file.filepath}`, e);
+          }
+        }
       }
 
       await Promise.all(
@@ -202,13 +220,13 @@ class Response extends ResponseHelper {
         })
       );
 
-      messages.push({
-        role: "system",
-        content: JSON.stringify(scrapedText),
-      });
+      // messages.push({
+      //   role: "system",
+      //   content: JSON.stringify(scrapedText),
+      // });
 
       // scrape text from https links and add each to new array of strings called scrapedText
-      console.log("MESSAGES: " + JSON.stringify(messages));
+      console.log("MESSAGES: " + JSON.stringify(messages, null, 4));
       let aiResponse = await openai.chat.completions.create({
         model: "gpt-4-turbo",
         messages: messages as ChatCompletionMessageParam[],
