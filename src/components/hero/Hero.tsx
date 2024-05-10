@@ -84,10 +84,10 @@ function Hero() {
           color="secondary"
           variant="contained"
           onClick={() => {
-            router.push("/compare");
+            router.push("/assistant");
           }}
         >
-          Start Comparing Now
+          Start Analysis Now
         </Button>
       </Box>
     </>
