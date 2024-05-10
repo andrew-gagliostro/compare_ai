@@ -59,7 +59,7 @@ function Hero() {
           className="font-bold mb-5"
           sx={{ color: "#6b7280" }}
         >
-          <Typography variant="h1">Compared</Typography>{" "}
+          <Typography variant="h1">ParseIt</Typography>{" "}
           <Box
             sx={{
               display: "flex",
@@ -72,8 +72,8 @@ function Hero() {
             className="text-xl subpixel-antialiased"
           >
             {/* <Box>Express your interests, ideas, and passions.</Box> */}
-            <Box>Helping You Make Decisions</Box>
             <Box>Easing The Burden Of Information Overload</Box>
+            <Box>Finding the Metrics that Matter</Box>
           </Box>
         </Box>
         {/* <h2 className="flex flex-col gap-2 text-2xl font-bold rotating-text pb-5">
