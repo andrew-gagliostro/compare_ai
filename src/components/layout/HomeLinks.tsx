@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import { Box, Typography } from "@mui/material";
 import { Inter } from "next/font/google";
 
@@ -22,36 +23,14 @@ export default function HomeLinks() {
           variant="body1"
           className={`${inter.className} m-0 text-md opacity-70 w-full`}
         >
-          Provide some context around what you're looking to compare and why.
-          Feel free to provide as much or as little detail as you'd like.
+          Add a prompt, providing some context around the content you're
+          submitting and why. Feel free to provide as much or as little detail
+          as you'd like.
         </Typography>
       </Box>
 
-      <a
-        className="group rounded-lg border border-transparent px-5 hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <Typography
-          variant="h2"
-          color="secondary"
-          className={`${inter.className} mb-3 text-2xl`}
-        >
-          Connect
-          <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none"></span>
-        </Typography>
-        <Typography
-          variant="body1"
-          className={`${inter.className} m-0 text-md opacity-70 w-full`}
-        >
-          Provide links to products, services, or anything else you'd like to
-          compare.
-        </Typography>
-      </a>
-
-      <a
-        className="group rounded-lg border border-transparent px-5 hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700"
-        target="_blank"
+      <Box
+        className="justifyCenter group rounded-lg border border-transparent pb-3 px-5 hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700"
         rel="noopener noreferrer"
       >
         <Typography
@@ -66,13 +45,34 @@ export default function HomeLinks() {
           variant="body1"
           className={`${inter.className} m-0 text-md opacity-70 w-full`}
         >
-          Let us know what factors are of greatest (or least) importance to you.
+          In your prompt, provide the assistant with a problem statement -
+          explain what insights or knowledge you hope to gain from the content
+          you submit.
         </Typography>
-      </a>
+      </Box>
 
-      <a
-        className="rounded-lg border border-transparent px-5 hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700"
-        target="_blank"
+      <Box
+        className="justifyCenter group rounded-lg border border-transparent pb-3 px-5 hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700"
+        rel="noopener noreferrer"
+      >
+        <Typography
+          variant="h2"
+          color="secondary"
+          className={`${inter.className} mb-3 text-2xl`}
+        >
+          Connect
+          <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none"></span>
+        </Typography>
+        <Typography
+          variant="body1"
+          className={`${inter.className} m-0 text-md opacity-70 w-full`}
+        >
+          Add links or upload files for our AI Assistant to Analyze.
+        </Typography>
+      </Box>
+
+      <Box
+        className="justifyCenter group rounded-lg border border-transparent pb-3 px-5 hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700"
         rel="noopener noreferrer"
       >
         <Typography
@@ -87,11 +87,11 @@ export default function HomeLinks() {
           variant="body1"
           className={`${inter.className} m-0 text-md opacity-70 w-full`}
         >
-          Submit your problem statement and we'll generate comparison of the
-          options you've provided.
+          Submit your problem statement and we'll generate an analysis of the
+          content you've provided.
         </Typography>
-      </a>
-      {/* <a className="flex flex-col w-full">
+      </Box>
+      {/* <Box className="flex flex-col w-full">
         <h2 className="text-2xl font-semibold pb-5">
           <div>Speech Pathologists</div>
           <div>Sharing deliverables they used and had success with</div>
@@ -108,7 +108,7 @@ export default function HomeLinks() {
           <div>Financier</div>
           <div>Top tips and tricks for getting started in real estate</div>
         </h2>
-      </a> */}
+      </Box> */}
     </Box>
   );
 }
