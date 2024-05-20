@@ -54,11 +54,25 @@ class SubmissionHistoryHandler extends ResponseHelper {
 
   async get(): Promise<any> {
     try {
+      let guestUser = false;
       if (!this.session || !this.session.user) {
+        // return {
+        //   status: 403,
+        //   success: false,
+        //   message: "Forbidden",
+        // };
+        guestUser = true;
+      }
+
+      if (guestUser) {
+        const submissionHistory = await SubmissionHistory.find({
+          user_id: "guest",
+        });
+
         return {
-          status: 403,
-          success: false,
-          message: "Forbidden",
+          status: 200,
+          success: "get call succeed!",
+          result: submissionHistory,
         };
       }
 
