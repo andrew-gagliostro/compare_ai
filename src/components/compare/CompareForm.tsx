@@ -243,7 +243,7 @@ function StyledForm() {
           pb: 2,
         }}
       >
-        Create New Comparison
+        New Query
       </Box>
       <form onSubmit={handleSubmit} style={{ width: "100%" }}>
         <Box className="mb-5">
