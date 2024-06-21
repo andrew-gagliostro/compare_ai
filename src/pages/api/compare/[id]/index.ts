@@ -17,6 +17,7 @@ import { Readability } from "@mozilla/readability";
 import TurndownService from "turndown";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { parse } from "csv-parse/sync";
+import SubmissionHistory from "@/models/SubmissionHistory";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -68,6 +69,7 @@ async function fetchReadableUrlContent(url) {
     const article = new Readability(dom.window.document).parse();
 
     // Verify that the article content exists
+    console.log("ARTICLE: " + JSON.stringify(article, null, 4));
     if (!article || !article.content) {
       console.error("Failed to retrieve the article content.");
       return null;
@@ -133,12 +135,12 @@ async function parseCsvFile(filePath: string): Promise<string> {
 
 class Response extends ResponseHelper {
   async post(): Promise<any> {
+    const { id } = this.request.query;
     /*make a script that will take prompt of type string and links
    of string array and feed the prompt to gpt4 and return the result
   */
     let filePaths: string[] = [];
     let prompt: string = "";
-    let links: string[] = [];
     try {
       /*take in the prompt (string) and links (string array) from the client request body
     using openai (version 4.4.0), feed the prompt using "gpt-3.5-turbo" model and using openai.ChatCompletion.create return the response in the
@@ -151,11 +153,6 @@ class Response extends ResponseHelper {
 
       try {
         prompt = fields.prompt.toString();
-        Object.keys(fields).forEach((key) => {
-          if (key.startsWith("links[")) {
-            links.push(fields[key].toString());
-          }
-        });
       } catch (parseError) {
         return {
           status: 400,
@@ -163,9 +160,6 @@ class Response extends ResponseHelper {
           error: parseError,
         };
       }
-
-      // Now you have prompt as a string, links as a string array, and filePaths as an array of the paths to the saved files
-      console.log({ prompt, links, filePaths });
 
       let messages: any[] = [
         {
@@ -175,24 +169,54 @@ class Response extends ResponseHelper {
         {
           role: "system",
           content:
-            "You will be provided with a set of messages, where each message represents text scraped from a web page and/or messages parsed from csv files (denoted with names WEB or CSV). Your task is to return a comparison/analysis (depending on the above user prompt) based on the content included in the upcoming low messages \
+            "You will be provided with a set of messages, where each message represents text scraped from a web page and/or messages parsed from csv files (denoted with names WEB:${link} or CSV). Your task is to return a comparison/analysis (depending on the above user prompt) based on the content included in the upcoming low messages \
            (which is potentially unstructured content pulled from web pages and articles) and in the context of the previous prompt question. \
-Please provide a long-form response to their prompt as well as a table comparing the different objects if appropriate (using markdown for the formatting of the entire response, including the table)",
+            If the content of a web page, the content of the message will start with status:url where url is the url of the page and status is the parsing status, and then a new line where the content of the page will start. If a page is unreadable(parsing failed), a web message will either be only the status:url or the status:url and some error response - please address any unreadable content in your response.\
+            I want you to use the content as your single source of truth when answering their prompt.\
+            Please provide a table comparing the different objects (if appropriate) as well as long-form response to their prompt (using markdown for the formatting of the entire response, including the table)",
         },
       ];
 
       let scrapedText = [];
 
-      for (let link of links) {
-        const url = link;
-
-        const content = await fetchReadableUrlContent(url);
-        messages.push({
-          role: "user",
-          content: content,
-          name: "WEB",
-        });
+      const userHistory = await SubmissionHistory.findById(id);
+      if (!userHistory) {
+        return {
+          status: 404,
+          success: false,
+          message: "userHistory not found",
+        };
       }
+
+      // Extract links from the userHistory document
+      const { links } = userHistory;
+      // Now you have prompt as a string, links as a string array, and filePaths as an array of the paths to the saved files
+      console.log({ prompt, links, filePaths });
+      let linkStatuses = [];
+      for (let link of links) {
+        const url = link.link;
+
+        const content = await fetchReadableUrlContent(link.link); // Assuming each link is an object with a 'url' property
+        if (content) {
+          // If content was successfully fetched and parsed, mark the link as 'completed'
+          linkStatuses.push({ link: link.link, status: "Parsed" });
+          messages.push({
+            role: "user",
+            content: `Parsed:${url}\n${content ? content : ""}`,
+            name: `WEB`,
+          });
+        } else {
+          // If fetching/parsing failed, mark the link as 'failed'
+          linkStatuses.push({ link: link.link, status: "Failed To Parse" });
+          messages.push({
+            role: "user",
+            content: `Failed To Parse:${url}\n${content ? content : ""}`,
+            name: `WEB`,
+          });
+        }
+      }
+      userHistory.links = linkStatuses; // Assuming there's a field in your schema to store these statuses
+      await userHistory.save();
 
       if (files.files) {
         const uploadedFiles = Array.isArray(files.files)
@@ -227,8 +251,14 @@ Please provide a long-form response to their prompt as well as a table comparing
 
       // scrape text from https links and add each to new array of strings called scrapedText
       console.log("MESSAGES: " + JSON.stringify(messages, null, 4));
+      const docWithMessages = await SubmissionHistory.findByIdAndUpdate(
+        id,
+        { $set: { messages: messages } },
+        { new: true } // This option returns the document after update was applied
+      );
+
       let aiResponse = await openai.chat.completions.create({
-        model: "gpt-4-turbo",
+        model: "gpt-4o",
         messages: messages as ChatCompletionMessageParam[],
         temperature: 0.75,
       });
@@ -236,7 +266,14 @@ Please provide a long-form response to their prompt as well as a table comparing
       // log the response and return the response to client with 200 status code
       console.log(aiResponse);
       let response = JSON.stringify(aiResponse.choices[0].message.content);
-      const plainResponse = response.replace(/\\n/g, "\n");
+      let plainResponse = response.replace(/\\n/g, "\n");
+      plainResponse = plainResponse.replace(/^"|"$/g, "");
+      const docWithResponse = await SubmissionHistory.findByIdAndUpdate(
+        id,
+        { $set: { response: plainResponse } },
+        { new: true } // This option returns the document after update was applied
+      );
+
       return {
         status: 200,
         success: "post call succeed!",
