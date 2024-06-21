@@ -1,4 +1,10 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
+import React, {
+  ChangeEvent,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   TextField,
   Button,
@@ -39,6 +45,7 @@ import SubmissionHistory, {
 import { AuthCtx } from "@/context/AuthContext";
 import { primary } from "@/theme";
 import StatusIndicator from "./StatusIndicator";
+import { UserModel } from "@/models/User";
 
 interface FileWithPreview extends File {
   preview: string;
@@ -55,6 +62,30 @@ function StyledForm() {
   const [history, setHistory] = useState<Partial<SubmissionHistoryModel>[]>([]); // Add state variable for user history
   const [expandedRow, setExpandedRow] = useState(null);
   const fileInputRef = useRef(null);
+
+  const [user, setUser] = useState<UserModel | null>(null);
+  const { getSession } = useContext(AuthCtx);
+
+  useEffect(() => {
+    const updateUser = () => {
+      try {
+        const session = getSession();
+
+        if (!session || !session.user) {
+          setUser(null);
+        } else {
+          console.log("session.user", session.user);
+          setUser(session.user as UserModel);
+        }
+      } catch {
+        setUser(null);
+      }
+    };
+    updateUser();
+
+    // we are not using async to wait for updateUser, so there will be a flash of page where the user is assumed not to be logged in. If we use a flag
+    // check manually the first time because we won't get a Hub event // cleanup
+  }, []);
 
   const handleRowExpandToggle = (index) => {
     if (expandedRow === index) {
@@ -247,7 +278,7 @@ function StyledForm() {
           pb: 2,
         }}
       >
-        Create New Comparison
+        New Query
       </Box>
       <form onSubmit={handleSubmit} style={{ width: "100%" }}>
         <Box className="mb-5">
@@ -504,7 +535,7 @@ function StyledForm() {
             pb: 2,
           }}
         >
-          Query History
+          {user ? "Query History" : "Example Prompts"}
         </Box>
         <TableContainer
           component={Paper}
@@ -609,12 +640,42 @@ function StyledForm() {
                         },
                       }}
                     >
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        rehypePlugins={[rehypeSanitize, rehypePrism]}
+                      <Box
+                        sx={{
+                          my: 1,
+                          width: "95%",
+                          padding: 2,
+                          borderRadius: 1,
+                          flexDirection: "column",
+                          display: "flex",
+                          justifyContent: "flex-start",
+                          color: "black",
+                          fontSize: "medium",
+                          textAlign: "left",
+                          overflowX: "auto", // Allows horizontal scrolling
+                          // Ensures table is not wider than the screen on mobile devices
+                          maxWidth: {
+                            xs: "100vw", // Adjust for extra small screens
+                            sm: "100%", // Adjust for small screens and up
+                          },
+                          // Ensures the table is fully visible on small devices by subtracting potential margins/paddings
+                          marginLeft: { xs: "-16px", sm: "auto" },
+                          marginRight: { xs: "-16px", sm: "auto" },
+                          "&::-webkit-scrollbar": {
+                            height: "6px", // Adjust scrollbar height for aesthetics
+                          },
+                          "&::-webkit-scrollbar-thumb": {
+                            backgroundColor: "rgba(0,0,0,0.3)", // Adjust scrollbar color for visibility
+                          },
+                        }}
                       >
-                        {item.response}
-                      </ReactMarkdown>
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          rehypePlugins={[rehypeSanitize, rehypePrism]}
+                        >
+                          {item.response}
+                        </ReactMarkdown>
+                      </Box>
                     </TableCell>
                     <TableCell
                       sx={{
