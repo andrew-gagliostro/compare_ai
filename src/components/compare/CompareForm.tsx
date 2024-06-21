@@ -92,7 +92,7 @@ function StyledForm() {
 
   const handleAddLink = () => {
     if (newLink.trim() !== "") {
-      setLinks([...links, newLink]);
+      setLinks([newLink, ...links]);
       setNewLink("");
     }
   };
