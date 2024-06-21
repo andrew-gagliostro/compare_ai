@@ -1,11 +1,29 @@
 import mongoose from "mongoose";
 
+enum Status {
+  CREATED = "Created",
+  FAILED = "Failed",
+  COMPLETED = "Completed",
+}
+
+enum LinkStatus {
+  SUBMITTED = "Submitted",
+  PARSED = "Parsed",
+  FAILED_TO_PARSE = "Failed To Parse",
+}
+
+export interface LinkModel {
+  link: string;
+  status: LinkStatus;
+}
+
 export interface SubmissionHistoryModel {
   _id?: string;
   user_id: string;
   prompt: string;
-  links: Array<string>;
+  links: Array<LinkModel>;
   response: string;
+  status: Status;
 }
 
 const submissionHistorySchema = new mongoose.Schema<SubmissionHistoryModel>(
@@ -19,12 +37,29 @@ const submissionHistorySchema = new mongoose.Schema<SubmissionHistoryModel>(
       required: true,
     },
     links: {
-      type: [String],
+      type: [
+        new mongoose.Schema<LinkModel>({
+          link: {
+            type: String,
+            required: true,
+          },
+          status: {
+            type: String,
+            enum: LinkStatus,
+            required: true,
+          },
+        }),
+      ],
       required: true,
     },
     response: {
       type: String,
-      required: true,
+      required: false,
+    },
+    status: {
+      type: String,
+      enum: Status,
+      required: false,
     },
   },
   {

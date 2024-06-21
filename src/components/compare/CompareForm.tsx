@@ -33,18 +33,22 @@ import rehypeSanitize from "rehype-sanitize";
 import rehypePrism from "@mapbox/rehype-prism";
 import "prismjs/themes/prism.css";
 import SubmissionHistory, {
+  LinkModel,
   SubmissionHistoryModel,
 } from "@/models/SubmissionHistory";
 import { AuthCtx } from "@/context/AuthContext";
 import { primary } from "@/theme";
+import StatusIndicator from "./StatusIndicator";
 
 interface FileWithPreview extends File {
   preview: string;
 }
 
+type LinkType = string | LinkModel;
+
 function StyledForm() {
   const [prompt, setPrompt] = useState("");
-  const [links, setLinks] = useState<string[]>([]);
+  const [links, setLinks] = useState<LinkType[]>([]);
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [newLink, setNewLink] = useState("");
   const [response, setResponse] = useState<any>(null);
@@ -60,22 +64,23 @@ function StyledForm() {
     }
   };
 
+  const fetchUserHistory = async () => {
+    try {
+      const res = await axios.get(`/api/userHistory`); // replace with the right endpoint
+      // Sort the history from most recent to oldest based on the createdAt timestamp
+      const sortedHistory = res.data.result.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+      setHistory(sortedHistory); // Set the sorted history
+      console.log(JSON.stringify(sortedHistory)); // Log sorted data
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     // Fetch user's submission history on component mount
-    const fetchUserHistory = async () => {
-      try {
-        const res = await axios.get(`/api/userHistory`); // replace with the right endpoint
-        // Sort the history from most recent to oldest based on the createdAt timestamp
-        const sortedHistory = res.data.result.sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-        setHistory(sortedHistory); // Set the sorted history
-        console.log(JSON.stringify(sortedHistory)); // Log sorted data
-      } catch (error) {
-        console.log(error);
-      }
-    };
     fetchUserHistory();
   }, []);
 
@@ -125,59 +130,72 @@ function StyledForm() {
     fileInputRef.current.click();
   };
 
-  const handleSubmit = async (event: any) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setResponse("Loading...");
 
-    // FormData can handle file uploads
-    const formData = new FormData();
-    formData.append("prompt", prompt);
-    if (links.length)
-      links.forEach((link, index) => formData.append(`links[${index}]`, link));
-    if (files && files.length) {
-      files.forEach((file) => {
-        formData.append("files", file);
-      });
-    }
-
-    let res = null as any;
     try {
-      res = await axios.post(`/api/compare`, formData, {
+      // Post the data to /api/userHistory
+      // Prepare the data in the required format
+      const postData = {
+        prompt: prompt,
+        links: links.map((link) => ({ link: link, status: "Submitted" })),
+        response: null,
+      };
+
+      const postResponse = await axios.post(`/api/userHistory`, postData);
+
+      setLinks(postResponse.data.result.links as LinkType[]);
+
+      const historyId = postResponse.data.result._id; // Assuming the response includes the ID of the created history
+
+      const formData = new FormData();
+
+      formData.append("prompt", prompt);
+      if (links.length)
+        links.forEach((link, index) =>
+          formData.append(
+            `links[${index}]`,
+            typeof link === "string" ? link : link.link
+          )
+        );
+      if (files && files.length) {
+        files.forEach((file) => {
+          formData.append("files", file);
+        });
+      }
+
+      axios.post(`/api/compare/${historyId}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("GOT RESPONSE");
-      /*
-      after posting to above endpoint, get response and
-      setResponse to the result field of response
-      */
-      let temp = res.data.result;
-      //remove double quotes from temp string
-      temp = temp.replace(/['"]+/g, "");
-      temp = temp.replace(/^"|"$/g, "");
-      setResponse(temp);
-    } catch (error) {
-      console.log(error);
-    }
 
-    if (res) {
-      try {
-        let temp = res.data.result;
-        temp = temp.replace(/['"]+/g, "");
-        temp = temp.replace(/^"|"$/g, "");
-        await axios.post(`/api/userHistory`, {
-          prompt: prompt,
-          links: links,
-          response: temp,
-        });
-        let newHistory = history.concat([
-          { prompt: prompt, links: links, response: temp },
-        ]);
-        setHistory(newHistory);
-      } catch (error) {
-        console.log(error);
-      }
+      // Function to poll /api/userHistory/{id} every 3 seconds
+      const pollForResponse = async (id) => {
+        const response = await axios.get(`/api/userHistory/${id}`);
+        if (response.data.result.response !== null) {
+          // If response is not null, update the state and stop polling
+          setResponse(response.data.result.response);
+          let newHistory = history.concat([
+            {
+              prompt: prompt,
+              links: response.data.result.links,
+              response: response.data.result.response,
+            },
+          ]);
+          setHistory(newHistory);
+        } else {
+          // If response is still null, wait 3 seconds and poll again
+          setTimeout(() => pollForResponse(id), 3000);
+        }
+      };
+
+      // Start polling
+      pollForResponse(historyId);
+    } catch (error) {
+      console.error("Error submitting user history:", error);
+      setResponse("An error occurred. Please try again.");
     }
   };
 
@@ -186,6 +204,19 @@ function StyledForm() {
     setPrompt(historyItem.prompt || "");
     setLinks(historyItem.links || []);
     setResponse(historyItem.response.replace(/^"|"$/g, ""));
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "Submitted":
+        return "yellow";
+      case "Parsed":
+        return "green";
+      case "Failed To Parse":
+        return "red";
+      default:
+        return "black";
+    }
   };
 
   return (
@@ -308,7 +339,6 @@ function StyledForm() {
             flexDirection: "column",
             flexWrap: "wrap",
             justifyContent: "space-between",
-            alignContent: "center",
           }}
         >
           <List
@@ -319,7 +349,7 @@ function StyledForm() {
               display: "flex",
               maxWidth: "100%",
               flexDirection: "column",
-              alignItemS: "center",
+              alignItems: "flex-start",
               alignContent: "space-between",
               flexWrap: "wrap",
             }}
@@ -329,10 +359,14 @@ function StyledForm() {
                 sx={{
                   display: "flex",
                   flexDirection: "row",
-                  justifyContent: "space-between",
                 }}
                 key={index}
               >
+                {typeof link === "object" && (
+                  <Box sx={{ mr: 2 }}>
+                    <StatusIndicator status={link.status} />
+                  </Box>
+                )}
                 <Typography
                   sx={{
                     overflow: "hidden",
@@ -341,7 +375,7 @@ function StyledForm() {
                     maxWidth: "90%",
                   }}
                 >
-                  {link}
+                  {typeof link === "string" ? link : link.link}
                 </Typography>
                 <IconButton onClick={() => handleRemoveLink(index)}>
                   <DeleteIcon />
@@ -438,7 +472,7 @@ function StyledForm() {
                   remarkPlugins={[remarkGfm]}
                   rehypePlugins={[rehypeSanitize, rehypePrism]}
                 >
-                  {response}
+                  {response.replace(/^"|"$/g, "")}
                 </ReactMarkdown>
               </Box>
             </Box>
@@ -613,14 +647,17 @@ function StyledForm() {
                                 <Typography
                                   variant="body2"
                                   key={index}
-                                  sx={{ display: "block", marginBottom: 2 }}
+                                  sx={{ display: "flex", marginBottom: 2 }}
                                 >
+                                  <Box sx={{ mr: 2 }}>
+                                    <StatusIndicator status={link.status} />
+                                  </Box>
                                   <a
-                                    href={link}
+                                    href={link.link}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                   >
-                                    {link}
+                                    {link.link}{" "}
                                   </a>
                                   {index !== item.links.length - 1 && (
                                     <>
