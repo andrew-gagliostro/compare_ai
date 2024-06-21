@@ -24,6 +24,7 @@ export interface SubmissionHistoryModel {
   links: Array<LinkModel>;
   response: string;
   status: Status;
+  messages?: Array<Object>;
 }
 
 const submissionHistorySchema = new mongoose.Schema<SubmissionHistoryModel>(
@@ -59,6 +60,10 @@ const submissionHistorySchema = new mongoose.Schema<SubmissionHistoryModel>(
     status: {
       type: String,
       enum: Status,
+      required: false,
+    },
+    messages: {
+      type: [Object],
       required: false,
     },
   },

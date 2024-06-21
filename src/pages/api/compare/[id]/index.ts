@@ -171,8 +171,9 @@ class Response extends ResponseHelper {
           content:
             "You will be provided with a set of messages, where each message represents text scraped from a web page and/or messages parsed from csv files (denoted with names WEB:${link} or CSV). Your task is to return a comparison/analysis (depending on the above user prompt) based on the content included in the upcoming low messages \
            (which is potentially unstructured content pulled from web pages and articles) and in the context of the previous prompt question. \
-            If the content of a web page, the content of the message will start with the url of the page and then a new line. If a page is unreadable, a web message will either be only the link or the link and some error response - please address any unreadable content in your response.\
-Please provide a long-form response to their prompt as well as a table comparing the different objects if appropriate (using markdown for the formatting of the entire response, including the table)",
+            If the content of a web page, the content of the message will start with status:url where url is the url of the page and status is the parsing status, and then a new line where the content of the page will start. If a page is unreadable(parsing failed), a web message will either be only the status:url or the status:url and some error response - please address any unreadable content in your response.\
+            I want you to use the content as your single source of truth when answering their prompt.\
+            Please provide a table comparing the different objects (if appropriate) as well as long-form response to their prompt (using markdown for the formatting of the entire response, including the table)",
         },
       ];
 
@@ -199,15 +200,20 @@ Please provide a long-form response to their prompt as well as a table comparing
         if (content) {
           // If content was successfully fetched and parsed, mark the link as 'completed'
           linkStatuses.push({ link: link.link, status: "Parsed" });
+          messages.push({
+            role: "user",
+            content: `Parsed:${url}\n${content ? content : ""}`,
+            name: `WEB`,
+          });
         } else {
           // If fetching/parsing failed, mark the link as 'failed'
           linkStatuses.push({ link: link.link, status: "Failed To Parse" });
+          messages.push({
+            role: "user",
+            content: `Failed To Parse:${url}\n${content ? content : ""}`,
+            name: `WEB`,
+          });
         }
-        messages.push({
-          role: "user",
-          content: `${url}\n${content ? content : ""}`,
-          name: `WEB`,
-        });
       }
       userHistory.links = linkStatuses; // Assuming there's a field in your schema to store these statuses
       await userHistory.save();
@@ -245,6 +251,12 @@ Please provide a long-form response to their prompt as well as a table comparing
 
       // scrape text from https links and add each to new array of strings called scrapedText
       console.log("MESSAGES: " + JSON.stringify(messages, null, 4));
+      const docWithMessages = await SubmissionHistory.findByIdAndUpdate(
+        id,
+        { $set: { messages: messages } },
+        { new: true } // This option returns the document after update was applied
+      );
+
       let aiResponse = await openai.chat.completions.create({
         model: "gpt-4o",
         messages: messages as ChatCompletionMessageParam[],
@@ -256,7 +268,7 @@ Please provide a long-form response to their prompt as well as a table comparing
       let response = JSON.stringify(aiResponse.choices[0].message.content);
       let plainResponse = response.replace(/\\n/g, "\n");
       plainResponse = plainResponse.replace(/^"|"$/g, "");
-      const updatedDocument = await SubmissionHistory.findByIdAndUpdate(
+      const docWithResponse = await SubmissionHistory.findByIdAndUpdate(
         id,
         { $set: { response: plainResponse } },
         { new: true } // This option returns the document after update was applied

@@ -92,7 +92,7 @@ function StyledForm() {
 
   const handleAddLink = () => {
     if (newLink.trim() !== "") {
-      setLinks([newLink, ...links]);
+      setLinks([...links, newLink]);
       setNewLink("");
     }
   };
@@ -139,13 +139,16 @@ function StyledForm() {
       // Prepare the data in the required format
       const postData = {
         prompt: prompt,
-        links: links.map((link) => ({ link: link, status: "Submitted" })),
+        links: links.map((link) => ({
+          link: typeof link === "string" ? link : link.link,
+          status: "Submitted",
+        })),
         response: null,
       };
 
       const postResponse = await axios.post(`/api/userHistory`, postData);
 
-      setLinks(postResponse.data.result.links as LinkType[]);
+      setLinks(postResponse.data.result.links as LinkModel[]);
 
       const historyId = postResponse.data.result._id; // Assuming the response includes the ID of the created history
 
@@ -177,14 +180,15 @@ function StyledForm() {
         if (response.data.result.response !== null) {
           // If response is not null, update the state and stop polling
           setResponse(response.data.result.response);
-          let newHistory = history.concat([
-            {
-              prompt: prompt,
-              links: response.data.result.links,
-              response: response.data.result.response,
-            },
-          ]);
-          setHistory(newHistory);
+          setLinks(response.data.result.links as LinkModel[]);
+
+          let newHistoryItem = {
+            prompt: prompt,
+            links: response.data.result.links,
+            response: response.data.result.response,
+          };
+          // Add the new history item to the beginning of the history array
+          setHistory((prevHistory) => [newHistoryItem, ...prevHistory]);
         } else {
           // If response is still null, wait 3 seconds and poll again
           setTimeout(() => pollForResponse(id), 3000);
@@ -375,7 +379,7 @@ function StyledForm() {
                     maxWidth: "90%",
                   }}
                 >
-                  {typeof link === "string" ? link : link.link}
+                  {typeof link === "object" ? link.link : link}
                 </Typography>
                 <IconButton onClick={() => handleRemoveLink(index)}>
                   <DeleteIcon />

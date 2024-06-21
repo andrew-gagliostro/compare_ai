@@ -6,7 +6,7 @@ import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 const getStatusColor = (status) => {
   switch (status) {
     case "Submitted":
-      return "yellow";
+      return "#f6bb32";
     case "Parsed":
       return "green";
     case "Failed To Parse":
