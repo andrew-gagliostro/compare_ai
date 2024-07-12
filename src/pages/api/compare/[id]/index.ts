@@ -18,6 +18,7 @@ import TurndownService from "turndown";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { parse } from "csv-parse/sync";
 import SubmissionHistory from "@/models/SubmissionHistory";
+import connect from "@/backend/connect";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -302,6 +303,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  await connect();
   const response = new Response(req, res);
   await response.send();
 }
