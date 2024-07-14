@@ -638,6 +638,7 @@ function StyledForm() {
                         "&:last-child": {
                           borderRight: "none",
                         },
+                        verticalAlign: "top",
                       }}
                     >
                       <Box
@@ -681,7 +682,7 @@ function StyledForm() {
                       sx={{
                         color: "text.primary",
                         maxWidth: 400,
-                        overflow: "hidden",
+                        overflowX: "auto",
                         textOverflow: "ellipsis",
                         alignItems: "top",
                         maxHeight: "min-content",
