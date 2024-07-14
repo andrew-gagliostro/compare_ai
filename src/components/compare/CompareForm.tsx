@@ -292,6 +292,7 @@ function StyledForm() {
             InputProps={{
               className: "text-black",
             }}
+            multiline
           />
         </Box>
         <Box sx={{ marginBottom: 2, display: "flex" }}>
