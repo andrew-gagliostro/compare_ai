@@ -84,7 +84,7 @@ function Hero() {
           color="secondary"
           variant="contained"
           onClick={() => {
-            router.push("/assistant");
+            router.push("/assistants");
           }}
         >
           Start Analysis Now

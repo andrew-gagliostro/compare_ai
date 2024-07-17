@@ -256,13 +256,11 @@ function StyledForm() {
 
   return (
     <Paper
+      elevation={3}
       sx={{
         width: "90%",
         my: 4,
         p: 3,
-        backgroundColor: "rgba(255, 255, 255, 0.75)", // Semi-transparent white background
-        backdropFilter: "blur(10px)", // Adding a blur effect to the background
-        borderRadius: "15px", // Optional: Adding some rounded corners to the Paper component
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -278,7 +276,9 @@ function StyledForm() {
           pb: 2,
         }}
       >
-        New Query
+        <Typography variant="h5" sx={{ mb: 2 }}>
+          New Query
+        </Typography>
       </Box>
       <form onSubmit={handleSubmit} style={{ width: "100%" }}>
         <Box className="mb-5">

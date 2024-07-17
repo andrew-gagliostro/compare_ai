@@ -6,19 +6,49 @@ import connect from "@/backend/connect";
 import ResponseHelper from "@/backend/responseHelper";
 import OpenAI from "openai";
 import mime from "mime-types"; // Import mime-types for setting MIME type
+import { ChatCompletionMessageParam } from "openai/resources";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export const transcribeAudio = async (filePath: string): Promise<any> => {
   const audioStream = fs.createReadStream(filePath);
 
-  const response = await openai.audio.transcriptions.create({
+  const transcribeResponse = await openai.audio.transcriptions.create({
     file: audioStream,
     model: "whisper-1",
-    response_format: "text",
+    prompt:
+      "Kindly provide a transcription in English, ensuring to include appropriate capitalization and punctuation as needed.",
+    response_format: "verbose_json",
+    timestamp_granularities: ["segment"],
   });
 
-  return response;
+  let messages: any[] = [
+    {
+      role: "system",
+      content:
+        'You will be provided with a object representing a transcription of an audio recording. \
+        This object will have fields "text" as well as "segments", representing the whole text as well as timestamped segments.\
+        Please respond with (and only with) a formatted markdown representation of the transcription, including timestamps between suspected changes of speakers and/or new sentences/breaks in speaking.',
+    },
+    {
+      role: "user",
+      content: JSON.stringify(transcribeResponse, null, 4),
+    },
+  ];
+
+  let aiResponse = await openai.chat.completions.create({
+    model: "gpt-4o",
+    messages: messages as ChatCompletionMessageParam[],
+    temperature: 0.5,
+  });
+
+  let response = JSON.stringify(aiResponse.choices[0].message.content);
+  let plainResponse = response.replace(/\\n/g, "\n");
+  plainResponse = plainResponse.replace(/^"|"$/g, "");
+
+  console.log("AI MARKDOWN RESPONSE: \n" + plainResponse);
+
+  return plainResponse;
 };
 
 export const config = {
@@ -77,7 +107,7 @@ class Response extends ResponseHelper {
 
       const transcription = await transcribeAudio(newFilePath);
       fs.unlinkSync(newFilePath); // Clean up the uploaded file
-      console.log(transcription);
+      console.log(JSON.stringify(transcription, null, 4));
 
       return {
         status: 200,

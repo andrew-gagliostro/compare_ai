@@ -131,10 +131,10 @@ export default function MenuListComposition() {
                         <MenuItem
                           onClick={() => {
                             handleClose;
-                            router.push("/assistant");
+                            router.push("/assistants");
                           }}
                         >
-                          Assistant
+                          Assistants
                         </MenuItem>
                         <MenuItem
                           onClick={() => {
@@ -169,10 +169,10 @@ export default function MenuListComposition() {
                         <MenuItem
                           onClick={() => {
                             handleClose;
-                            router.push("/assistant");
+                            router.push("/assistants");
                           }}
                         >
-                          Assistant
+                          Assistants
                         </MenuItem>
                         <MenuItem
                           onClick={() => {
