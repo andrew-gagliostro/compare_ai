@@ -17,7 +17,7 @@ import { Readability } from "@mozilla/readability";
 import TurndownService from "turndown";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { parse } from "csv-parse/sync";
-import SubmissionHistory from "@/models/SubmissionHistory";
+import QueryHistory from "@/models/QueryHistory";
 import connect from "@/backend/connect";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -180,17 +180,17 @@ class Response extends ResponseHelper {
 
       let scrapedText = [];
 
-      const userHistory = await SubmissionHistory.findById(id);
-      if (!userHistory) {
+      const queryHistory = await QueryHistory.findById(id);
+      if (!queryHistory) {
         return {
           status: 404,
           success: false,
-          message: "userHistory not found",
+          message: "queryHistory not found",
         };
       }
 
-      // Extract links from the userHistory document
-      const { links } = userHistory;
+      // Extract links from the queryHistory document
+      const { links } = queryHistory;
       // Now you have prompt as a string, links as a string array, and filePaths as an array of the paths to the saved files
       console.log({ prompt, links, filePaths });
       let linkStatuses = [];
@@ -216,8 +216,8 @@ class Response extends ResponseHelper {
           });
         }
       }
-      userHistory.links = linkStatuses; // Assuming there's a field in your schema to store these statuses
-      await userHistory.save();
+      queryHistory.links = linkStatuses; // Assuming there's a field in your schema to store these statuses
+      await queryHistory.save();
 
       if (files.files) {
         const uploadedFiles = Array.isArray(files.files)
@@ -252,7 +252,7 @@ class Response extends ResponseHelper {
 
       // scrape text from https links and add each to new array of strings called scrapedText
       console.log("MESSAGES: " + JSON.stringify(messages, null, 4));
-      const docWithMessages = await SubmissionHistory.findByIdAndUpdate(
+      const docWithMessages = await QueryHistory.findByIdAndUpdate(
         id,
         { $set: { messages: messages } },
         { new: true } // This option returns the document after update was applied
@@ -269,7 +269,7 @@ class Response extends ResponseHelper {
       let response = JSON.stringify(aiResponse.choices[0].message.content);
       let plainResponse = response.replace(/\\n/g, "\n");
       plainResponse = plainResponse.replace(/^"|"$/g, "");
-      const docWithResponse = await SubmissionHistory.findByIdAndUpdate(
+      const docWithResponse = await QueryHistory.findByIdAndUpdate(
         id,
         { $set: { response: plainResponse } },
         { new: true } // This option returns the document after update was applied

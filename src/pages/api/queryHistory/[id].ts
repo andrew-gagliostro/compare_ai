@@ -1,6 +1,4 @@
-import SubmissionHistory, {
-  SubmissionHistoryModel,
-} from "@/models/SubmissionHistory"; // Adjust the import path as needed
+import QueryHistory, { QueryHistoryModel } from "@/models/QueryHistory"; // Adjust the import path as needed
 import User, { UserModel } from "@/models/User"; // Adjust the import path as needed
 var createError = require("http-errors");
 const { ObjectId } = require("mongodb");
@@ -8,7 +6,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import ResponseHelper from "@/backend/responseHelper";
 import connect from "@/backend/connect";
 
-class SubmissionHistoryIdHandler extends ResponseHelper {
+class QueryHistoryIdHandler extends ResponseHelper {
   async post(): Promise<any> {
     return {
       status: 405,
@@ -29,9 +27,9 @@ class SubmissionHistoryIdHandler extends ResponseHelper {
         };
       }
 
-      const submissionHistory = await SubmissionHistory.findById(id);
+      const queryHistory = await QueryHistory.findById(id);
 
-      if (!submissionHistory) {
+      if (!queryHistory) {
         return {
           status: 404,
           success: false,
@@ -42,7 +40,7 @@ class SubmissionHistoryIdHandler extends ResponseHelper {
       return {
         status: 200,
         success: "get call succeed!",
-        result: submissionHistory,
+        result: queryHistory,
       };
     } catch (e) {
       console.log(e);
@@ -66,7 +64,7 @@ class SubmissionHistoryIdHandler extends ResponseHelper {
         };
       }
 
-      const submissionHistory = await SubmissionHistory.findByIdAndUpdate(
+      const queryHistory = await QueryHistory.findByIdAndUpdate(
         id,
         this.request.body,
         {
@@ -74,7 +72,7 @@ class SubmissionHistoryIdHandler extends ResponseHelper {
         }
       );
 
-      if (!submissionHistory) {
+      if (!queryHistory) {
         return {
           status: 404,
           success: false,
@@ -85,7 +83,7 @@ class SubmissionHistoryIdHandler extends ResponseHelper {
       return {
         status: 200,
         success: "put call succeed!",
-        result: submissionHistory,
+        result: queryHistory,
       };
     } catch (e) {
       console.log(e);
@@ -109,9 +107,9 @@ class SubmissionHistoryIdHandler extends ResponseHelper {
         };
       }
 
-      const submissionHistory = await SubmissionHistory.findByIdAndDelete(id);
+      const queryHistory = await QueryHistory.findByIdAndDelete(id);
 
-      if (!submissionHistory) {
+      if (!queryHistory) {
         return {
           status: 404,
           success: false,
@@ -122,7 +120,7 @@ class SubmissionHistoryIdHandler extends ResponseHelper {
       return {
         status: 200,
         success: "delete call succeed!",
-        result: submissionHistory,
+        result: queryHistory,
       };
     } catch (e) {
       console.log(e);
@@ -140,6 +138,6 @@ export default async function handler(
   res: NextApiResponse
 ) {
   await connect();
-  const response = new SubmissionHistoryIdHandler(req, res);
+  const response = new QueryHistoryIdHandler(req, res);
   await response.send();
 }

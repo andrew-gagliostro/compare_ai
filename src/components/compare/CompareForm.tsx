@@ -38,10 +38,10 @@ import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 import rehypePrism from "@mapbox/rehype-prism";
 import "prismjs/themes/prism.css";
-import SubmissionHistory, {
+import QueryHistory, {
   LinkModel,
-  SubmissionHistoryModel,
-} from "@/models/SubmissionHistory";
+  QueryHistoryModel,
+} from "@/models/QueryHistory";
 import { AuthCtx } from "@/context/AuthContext";
 import { primary } from "@/theme";
 import StatusIndicator from "./StatusIndicator";
@@ -59,7 +59,7 @@ function StyledForm() {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [newLink, setNewLink] = useState("");
   const [response, setResponse] = useState<any>(null);
-  const [history, setHistory] = useState<Partial<SubmissionHistoryModel>[]>([]); // Add state variable for user history
+  const [history, setHistory] = useState<Partial<QueryHistoryModel>[]>([]); // Add state variable for user history
   const [expandedRow, setExpandedRow] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -95,9 +95,9 @@ function StyledForm() {
     }
   };
 
-  const fetchUserHistory = async () => {
+  const fetchQueryHistory = async () => {
     try {
-      const res = await axios.get(`/api/userHistory`); // replace with the right endpoint
+      const res = await axios.get(`/api/queryHistory`); // replace with the right endpoint
       // Sort the history from most recent to oldest based on the createdAt timestamp
       const sortedHistory = res.data.result.sort(
         (a, b) =>
@@ -112,7 +112,7 @@ function StyledForm() {
 
   useEffect(() => {
     // Fetch user's submission history on component mount
-    fetchUserHistory();
+    fetchQueryHistory();
   }, []);
 
   //cleanup on files to avoid memory leaks
@@ -166,7 +166,7 @@ function StyledForm() {
     setResponse("Loading...");
 
     try {
-      // Post the data to /api/userHistory
+      // Post the data to /api/queryHistory
       // Prepare the data in the required format
       const postData = {
         prompt: prompt,
@@ -177,7 +177,7 @@ function StyledForm() {
         response: null,
       };
 
-      const postResponse = await axios.post(`/api/userHistory`, postData);
+      const postResponse = await axios.post(`/api/queryHistory`, postData);
 
       setLinks(postResponse.data.result.links as LinkModel[]);
 
@@ -205,9 +205,9 @@ function StyledForm() {
         },
       });
 
-      // Function to poll /api/userHistory/{id} every 3 seconds
+      // Function to poll /api/queryHistory/{id} every 3 seconds
       const pollForResponse = async (id) => {
-        const response = await axios.get(`/api/userHistory/${id}`);
+        const response = await axios.get(`/api/queryHistory/${id}`);
         if (response.data.result.response !== null) {
           // If response is not null, update the state and stop polling
           setResponse(response.data.result.response);

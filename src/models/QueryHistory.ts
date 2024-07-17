@@ -17,7 +17,7 @@ export interface LinkModel {
   status: LinkStatus;
 }
 
-export interface SubmissionHistoryModel {
+export interface QueryHistoryModel {
   _id?: string;
   user_id: string;
   prompt: string;
@@ -27,7 +27,7 @@ export interface SubmissionHistoryModel {
   messages?: Array<Object>;
 }
 
-const submissionHistorySchema = new mongoose.Schema<SubmissionHistoryModel>(
+const queryHistorySchema = new mongoose.Schema<QueryHistoryModel>(
   {
     user_id: {
       type: String,
@@ -73,5 +73,5 @@ const submissionHistorySchema = new mongoose.Schema<SubmissionHistoryModel>(
 );
 
 export default (mongoose.models
-  .SubmissionHistory as mongoose.Model<SubmissionHistoryModel>) ||
-  mongoose.model("SubmissionHistory", submissionHistorySchema);
+  .QueryHistory as mongoose.Model<QueryHistoryModel>) ||
+  mongoose.model("QueryHistory", queryHistorySchema);

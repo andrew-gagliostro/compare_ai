@@ -1,6 +1,4 @@
-import SubmissionHistory, {
-  SubmissionHistoryModel,
-} from "@/models/SubmissionHistory"; // or wherever your schema is located;
+import QueryHistory, { QueryHistoryModel } from "@/models/QueryHistory"; // or wherever your schema is located;
 import User, { UserModel } from "@/models/User"; // or wherever your schema is located;
 var createError = require("http-errors");
 var path = require("path");
@@ -14,7 +12,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import ResponseHelper from "@/backend/responseHelper";
 import connect from "@/backend/connect";
 
-class SubmissionHistoryHandler extends ResponseHelper {
+class QueryHistoryHandler extends ResponseHelper {
   async post(): Promise<any> {
     /* input: user_id, prompt, links, response. */
     try {
@@ -33,14 +31,14 @@ class SubmissionHistoryHandler extends ResponseHelper {
       }
 
       const body = { ...this.request.body, user_id: user._id };
-      const submissionHistory = new SubmissionHistory(body);
+      const queryHistory = new QueryHistory(body);
 
-      await submissionHistory.save();
+      await queryHistory.save();
 
       return {
         status: 200,
         success: "post call succeed!",
-        result: submissionHistory,
+        result: queryHistory,
       };
     } catch (e) {
       console.log(e);
@@ -65,28 +63,28 @@ class SubmissionHistoryHandler extends ResponseHelper {
       }
 
       if (guestUser) {
-        const submissionHistory = await SubmissionHistory.find({
+        const queryHistory = await QueryHistory.find({
           user_id: "guest",
         });
 
         return {
           status: 200,
           success: "get call succeed!",
-          result: submissionHistory,
+          result: queryHistory,
         };
       }
 
       const user = await User.findOne({ name: this.session.user.name });
 
       const userId = user._id;
-      const submissionHistory = await SubmissionHistory.find({
+      const queryHistory = await QueryHistory.find({
         user_id: userId,
       });
 
       return {
         status: 200,
         success: "get call succeed!",
-        result: submissionHistory,
+        result: queryHistory,
       };
     } catch (e) {
       console.log(e);
@@ -104,6 +102,6 @@ export default async function handler(
   res: NextApiResponse
 ) {
   await connect();
-  const response = new SubmissionHistoryHandler(req, res);
+  const response = new QueryHistoryHandler(req, res);
   await response.send();
 }
