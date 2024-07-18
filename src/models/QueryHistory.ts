@@ -12,6 +12,11 @@ enum LinkStatus {
   FAILED_TO_PARSE = "Failed To Parse",
 }
 
+export enum QueryType {
+  TRANSCRIPTION = "TRANSCRIPTION",
+  WEB_FILE_SCRAPE = "WEB_FILE_SCRAPE",
+}
+
 export interface LinkModel {
   link: string;
   status: LinkStatus;
@@ -24,7 +29,9 @@ export interface QueryHistoryModel {
   links: Array<LinkModel>;
   response: string;
   status: Status;
+  queryType: QueryType; // Add this line
   messages?: Array<Object>;
+  createdAt: string;
 }
 
 const queryHistorySchema = new mongoose.Schema<QueryHistoryModel>(
@@ -61,6 +68,11 @@ const queryHistorySchema = new mongoose.Schema<QueryHistoryModel>(
       type: String,
       enum: Status,
       required: false,
+    },
+    queryType: {
+      type: String,
+      enum: Object.values(QueryType),
+      required: true,
     },
     messages: {
       type: [Object],

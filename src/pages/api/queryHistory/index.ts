@@ -77,9 +77,12 @@ class QueryHistoryHandler extends ResponseHelper {
       const user = await User.findOne({ name: this.session.user.name });
 
       const userId = user._id;
-      const queryHistory = await QueryHistory.find({
-        user_id: userId,
-      });
+      const query = { user_id: userId };
+      if (this.request.query.queryType) {
+        query["queryType"] = this.request.query.queryType;
+      }
+
+      const queryHistory = await QueryHistory.find(query);
 
       return {
         status: 200,
