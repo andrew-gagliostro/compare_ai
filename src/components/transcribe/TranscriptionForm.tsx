@@ -263,18 +263,87 @@ function TranscriptionForm() {
         >
           {user ? "Transcription History" : "Example Transcriptions"}
         </Box>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Created Date</TableCell>
-                <TableCell>Response</TableCell>
+        <TableContainer
+          component={Paper}
+          sx={{
+            borderRadius: 2,
+            overflowX: "auto", // Allows horizontal scrolling
+            width: "100%",
+            // Ensures table is not wider than the screen on mobile devices
+            maxWidth: {
+              xs: "100vw", // Adjust for extra small screens
+              sm: "100%", // Adjust for small screens and up
+            },
+            // Ensures the table is fully visible on small devices by subtracting potential margins/paddings
+            marginLeft: { xs: "-16px", sm: "auto" },
+            marginRight: { xs: "-16px", sm: "auto" },
+            "&::-webkit-scrollbar": {
+              height: "6px", // Adjust scrollbar height for aesthetics
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "rgba(0,0,0,0.3)", // Adjust scrollbar color for visibility
+            },
+          }}
+        >
+          <Table
+            sx={{ minWidth: 650 }}
+            aria-label="transcription history table"
+          >
+            <TableHead sx={{ backgroundColor: "secondary.main" }}>
+              <TableRow sx={{ textAlign: "center" }}>
+                <TableCell
+                  sx={{
+                    color: "common.white",
+                    fontWeight: "bold",
+                    fontSize: "1.2rem",
+                    textAlign: "center",
+                    borderRight: "1px solid #504b5f",
+                    borderBottom: "1px solid #504b5f",
+                  }}
+                >
+                  Created
+                </TableCell>
+                <TableCell
+                  sx={{
+                    color: "common.white",
+                    fontWeight: "bold",
+                    fontSize: "1.2rem",
+                    textAlign: "center",
+                    borderRight: "1px solid #504b5f",
+                    borderBottom: "1px solid #504b5f",
+                  }}
+                >
+                  Transcription
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {history.map((item, index) => (
-                <TableRow key={index}>
-                  <TableCell>
+                <TableRow
+                  key={index}
+                  sx={{
+                    "&:nth-of-type(odd)": {
+                      backgroundColor: "action.hover",
+                    },
+                    "&:hover": { backgroundColor: "action.selected" },
+                    "&:last-child": {
+                      borderBottom: "none",
+                    },
+                  }}
+                >
+                  <TableCell
+                    component="th"
+                    scope="row"
+                    sx={{
+                      color: "text.primary",
+                      maxWidth: 200,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      verticalAlign: "top",
+                      borderRight: "1px solid #504b5f",
+                      borderBottom: "1px solid #504b5f",
+                    }}
+                  >
                     {new Date(item.createdAt).toLocaleString("en-US", {
                       year: "numeric",
                       month: "long",
@@ -284,13 +353,52 @@ function TranscriptionForm() {
                       hour12: true,
                     })}
                   </TableCell>
-                  <TableCell>
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      rehypePlugins={[rehypeSanitize, rehypePrism]}
+                  <TableCell
+                    sx={{
+                      color: "text.primary",
+                      borderRight: "1px solid #504b5f",
+                      borderBottom: "1px solid #504b5f",
+                      "&:last-child": {
+                        borderRight: "none",
+                      },
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        my: 1,
+                        width: "95%",
+                        padding: 2,
+                        borderRadius: 1,
+                        flexDirection: "column",
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        color: "black",
+                        fontSize: "medium",
+                        textAlign: "left",
+                        overflowX: "auto", // Allows horizontal scrolling
+                        // Ensures table is not wider than the screen on mobile devices
+                        maxWidth: {
+                          xs: "100vw", // Adjust for extra small screens
+                          sm: "100%", // Adjust for small screens and up
+                        },
+                        // Ensures the table is fully visible on small devices by subtracting potential margins/paddings
+                        marginLeft: { xs: "-16px", sm: "auto" },
+                        marginRight: { xs: "-16px", sm: "auto" },
+                        "&::-webkit-scrollbar": {
+                          height: "6px", // Adjust scrollbar height for aesthetics
+                        },
+                        "&::-webkit-scrollbar-thumb": {
+                          backgroundColor: "rgba(0,0,0,0.3)", // Adjust scrollbar color for visibility
+                        },
+                      }}
                     >
-                      {item.response}
-                    </ReactMarkdown>
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        rehypePlugins={[rehypeSanitize, rehypePrism]}
+                      >
+                        {item.response}
+                      </ReactMarkdown>
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))}

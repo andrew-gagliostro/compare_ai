@@ -639,12 +639,12 @@ function StyledForm() {
                         "&:last-child": {
                           borderRight: "none",
                         },
+                        maxWidth: "60vw",
                       }}
                     >
                       <Box
                         sx={{
                           my: 1,
-                          width: "95%",
                           padding: 2,
                           borderRadius: 1,
                           flexDirection: "column",

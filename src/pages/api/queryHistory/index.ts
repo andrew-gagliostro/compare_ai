@@ -80,6 +80,8 @@ class QueryHistoryHandler extends ResponseHelper {
       const query = { user_id: userId };
       if (this.request.query.queryType) {
         query["queryType"] = this.request.query.queryType;
+      } else {
+        query["queryType"] = null;
       }
 
       const queryHistory = await QueryHistory.find(query);
