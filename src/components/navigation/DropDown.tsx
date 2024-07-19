@@ -142,10 +142,11 @@ export default function MenuListComposition() {
                             router.push("/api/auth/signout");
                           }}
                         >
+                          Sign Out
                           <Avatar
-                            src={user.picture}
+                            src={"default_avatar.png"}
                             alt="User picture"
-                            sx={{ width: 24, height: 24, marginRight: 2 }} // Adjust size as needed
+                            sx={{ width: 24, height: 24, ml: 2 }} // Adjust size as needed
                             onClick={handleToggle}
                             aria-controls={
                               open ? "composition-menu" : undefined
@@ -153,7 +154,6 @@ export default function MenuListComposition() {
                             aria-expanded={open ? "true" : undefined}
                             aria-haspopup="true"
                           />
-                          Sign Out
                         </MenuItem>
                       </Box>
                     ) : (

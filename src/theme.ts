@@ -133,14 +133,14 @@ const theme = createTheme({
     MuiCssBaseline: {
       styleOverrides: `
                 *::-webkit-scrollbar {
-                    width: 10px;
+                    width:15px;
                 }
                 *::-webkit-scrollbar-track {
                     background: #1b1a21;
                 }
                 *::-webkit-scrollbar-thumb {
                     background-color: #888;
-                    border-radius: 20px;
+                    border-radius: 10px;
                     border: 3px solid #1b1a21;
                 }
                 *::-webkit-scrollbar-thumb:hover {

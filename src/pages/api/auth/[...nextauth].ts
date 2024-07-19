@@ -4,6 +4,7 @@
 /* eslint-disable quotes */
 import NextAuth, { Awaitable, NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import GitHubProvider from "next-auth/providers/github";
 import User from "@/models/User";
 import connect from "@/backend/connect";
 
@@ -44,6 +45,16 @@ export const authOptions: NextAuthOptions = {
         };
       },
       style: { logo: "/google.svg", bg: "#fff", text: "#000" },
+    }),
+    GitHubProvider({
+      // Add the GitHub provider
+      clientId: process.env.GITHUB_CLIENT_ID as string,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+      // Optionally, specify scopes requested from GitHub
+      authorization: {
+        params: { scope: "read:user user:email" },
+      },
+      style: { logo: "/github.svg", bg: "#fff", text: "#000" },
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET as string,
