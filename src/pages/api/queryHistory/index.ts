@@ -62,21 +62,13 @@ class QueryHistoryHandler extends ResponseHelper {
         guestUser = true;
       }
 
+      let userId = null as any;
       if (guestUser) {
-        const queryHistory = await QueryHistory.find({
-          user_id: "guest",
-        });
-
-        return {
-          status: 200,
-          success: "get call succeed!",
-          result: queryHistory,
-        };
+        userId = "guest";
+      } else {
+        const user = await User.findOne({ name: this.session.user.name });
+        userId = user._id;
       }
-
-      const user = await User.findOne({ name: this.session.user.name });
-
-      const userId = user._id;
       const query = { user_id: userId };
       if (this.request.query.queryType) {
         query["queryType"] = this.request.query.queryType;

@@ -136,8 +136,9 @@ function TranscriptionForm() {
       const pollForResponse = async (id) => {
         const response = await axios.get(`/api/queryHistory/${id}`);
         if (response.data.result.response !== null) {
-          setResponse(null);
-          fetchQueryHistory();
+          const newItem = response.data.result as QueryHistoryModel;
+          setHistory((prevHistory) => [newItem, ...prevHistory]);
+          setResponse(newItem.response);
         } else {
           setTimeout(() => pollForResponse(id), 3000);
         }
