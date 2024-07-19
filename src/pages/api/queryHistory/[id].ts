@@ -27,7 +27,7 @@ class QueryHistoryIdHandler extends ResponseHelper {
         };
       }
 
-      const queryHistory = await QueryHistory.findById(id);
+      let queryHistory = await QueryHistory.findById(id);
 
       if (!queryHistory) {
         return {

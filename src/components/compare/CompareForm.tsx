@@ -575,7 +575,7 @@ function StyledForm() {
                     fontSize: "1.2rem",
                     textAlign: "center",
                     borderRight: "1px solid black",
-                    borderBottom: "1px solid #3f278c",
+                    borderBottom: "1px solid #1D29BF",
                   }}
                 >
                   Prompt
@@ -587,7 +587,7 @@ function StyledForm() {
                     fontSize: "1.2rem",
                     textAlign: "center",
                     borderRight: "1px solid black",
-                    borderBottom: "1px solid #3f278c",
+                    borderBottom: "1px solid #1D29BF",
                   }}
                 >
                   Response
@@ -598,7 +598,7 @@ function StyledForm() {
                     fontWeight: "bold",
                     fontSize: "1.2rem",
                     textAlign: "center",
-                    borderBottom: "1px solid #3f278c",
+                    borderBottom: "1px solid #1D29BF",
                   }}
                 >
                   Links
@@ -630,8 +630,8 @@ function StyledForm() {
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         verticalAlign: "top",
-                        borderRight: "1px solid #3f278c",
-                        borderBottom: "1px solid #3f278c",
+                        borderRight: "1px solid #1D29BF",
+                        borderBottom: "1px solid #1D29BF",
                       }}
                     >
                       {item.prompt}
@@ -639,8 +639,8 @@ function StyledForm() {
                     <TableCell
                       sx={{
                         color: "text.primary",
-                        borderRight: "1px solid #3f278c",
-                        borderBottom: "1px solid #3f278c",
+                        borderRight: "1px solid #1D29BF",
+                        borderBottom: "1px solid #1D29BF",
                         "&:last-child": {
                           borderRight: "none",
                         },
@@ -693,7 +693,7 @@ function StyledForm() {
                         alignItems: "top",
                         maxHeight: "min-content",
                         verticalAlign: "top",
-                        borderBottom: "1px solid #3f278c",
+                        borderBottom: "1px solid #1D29BF",
                       }}
                     >
                       {item.links && item.links.length > 0 && (

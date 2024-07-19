@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import HomeLinks from "@/components/layout/HomeLinks";
 import { Hero } from "@/components/hero/Hero";
-import { Typography, Tabs, Tab, Box } from "@mui/material";
+import { Typography, Tabs, Tab, Box, autocompleteClasses } from "@mui/material";
 import { NavbarTwoColumns } from "@/components/navigation/NavbarTwoColumns";
 import { DropDown } from "@/components/hero/DropDown";
 import { Logo } from "@/components/hero/Logo";
@@ -24,7 +24,7 @@ export default function Home() {
       <Box
         sx={{
           display: "flex",
-          justifyContent: "center",
+          pl: 0.5,
           width: "100%",
           borderColor: "divider",
         }}
@@ -35,6 +35,7 @@ export default function Home() {
           textColor="secondary"
           indicatorColor="secondary"
           aria-label="basic tabs example"
+          sx={{ fontWeight: 300 }}
         >
           <Tab
             label="Web and File Analysis"

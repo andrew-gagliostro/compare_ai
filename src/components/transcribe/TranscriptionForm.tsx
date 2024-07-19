@@ -189,7 +189,7 @@ function TranscriptionForm() {
               sx={{
                 // border:
                 //   analysisType == "TRANSCRIPTION_ONLY"
-                //     ? "2px solid #3f278c"
+                //     ? "2px solid #1D29BF"
                 //     : "none",
                 backgroundColor:
                   analysisType == "TRANSCRIPTION_ONLY"
@@ -203,7 +203,7 @@ function TranscriptionForm() {
               sx={{
                 //   border:
                 //     analysisType != "TRANSCRIPTION_ONLY"
-                //       ? "2px solid #3f278c"
+                //       ? "2px solid #1D29BF"
                 //       : "none",
                 //   borderRadius: 1,
                 backgroundColor:
@@ -375,7 +375,7 @@ function TranscriptionForm() {
                     fontSize: "1.2rem",
                     textAlign: "center",
                     borderRight: "1px solid black",
-                    borderBottom: "1px solid #3f278c",
+                    borderBottom: "1px solid #1D29BF",
                   }}
                 >
                   Created
@@ -386,8 +386,8 @@ function TranscriptionForm() {
                     fontWeight: "bold",
                     fontSize: "1.2rem",
                     textAlign: "center",
-                    borderRight: "1px solid #3f278c",
-                    borderBottom: "1px solid #3f278c",
+                    borderRight: "1px solid #1D29BF",
+                    borderBottom: "1px solid #1D29BF",
                   }}
                 >
                   Transcription
@@ -417,8 +417,8 @@ function TranscriptionForm() {
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       verticalAlign: "top",
-                      borderRight: "1px solid #3f278c",
-                      borderBottom: "1px solid #3f278c",
+                      borderRight: "1px solid #1D29BF",
+                      borderBottom: "1px solid #1D29BF",
                     }}
                   >
                     {new Date(item.createdAt).toLocaleString("en-US", {
@@ -433,8 +433,8 @@ function TranscriptionForm() {
                   <TableCell
                     sx={{
                       color: "text.primary",
-                      borderRight: "1px solid #3f278c",
-                      borderBottom: "1px solid #3f278c",
+                      borderRight: "1px solid #1D29BF",
+                      borderBottom: "1px solid #1D29BF",
                       "&:last-child": {
                         borderRight: "none",
                       },

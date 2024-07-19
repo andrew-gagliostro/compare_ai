@@ -1,7 +1,7 @@
 import { createTheme, responsiveFontSizes } from "@mui/material";
 
 export const primary = "#7a808d";
-export const secondary = "#3f278c";
+export const secondary = "#1D29BF";
 
 const theme = createTheme({
   palette: {
@@ -21,7 +21,7 @@ const theme = createTheme({
       main: "#f44336",
       contrastText: "#fff",
     },
-    divider: "#3f278c",
+    divider: "#1D29BF",
   },
   typography: {
     fontFamily: [
@@ -108,7 +108,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           color: secondary,
-          fontWeight: 550,
+          fontWeight: 420,
           backgroundColor: "#f6f6f6",
           "&:hover": {
             backgroundColor: "#dddddd",
