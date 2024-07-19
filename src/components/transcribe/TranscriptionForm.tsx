@@ -169,7 +169,7 @@ function TranscriptionForm() {
         Generate Transcription
       </Typography>
       <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-        <Box sx={{ display: "flex", gap: 3 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
           <Tabs
             value={analysisType}
             onChange={(e, newValue) => setAnalysisType(newValue)}
@@ -177,7 +177,6 @@ function TranscriptionForm() {
             textColor="primary"
             variant="fullWidth"
             sx={{ mb: 2 }}
-            orientation="vertical"
             // TabIndicatorProps={{
             //   sx: {
             //     left: 0,
