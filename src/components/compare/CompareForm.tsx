@@ -561,7 +561,12 @@ function StyledForm() {
           }}
         >
           <Table sx={{ minWidth: 650 }} aria-label="submission history table">
-            <TableHead sx={{ backgroundColor: "secondary.main" }}>
+            <TableHead
+              sx={{
+                backgroundColor: "secondary.main",
+                borderBottom: "2px solid black",
+              }}
+            >
               <TableRow sx={{ textAlign: "center" }}>
                 <TableCell
                   sx={{
@@ -569,8 +574,8 @@ function StyledForm() {
                     fontWeight: "bold",
                     fontSize: "1.2rem",
                     textAlign: "center",
-                    borderRight: "1px solid #504b5f",
-                    borderBottom: "1px solid #504b5f",
+                    borderRight: "1px solid black",
+                    borderBottom: "1px solid #3f278c",
                   }}
                 >
                   Prompt
@@ -581,8 +586,8 @@ function StyledForm() {
                     fontWeight: "bold",
                     fontSize: "1.2rem",
                     textAlign: "center",
-                    borderRight: "1px solid #504b5f",
-                    borderBottom: "1px solid #504b5f",
+                    borderRight: "1px solid black",
+                    borderBottom: "1px solid #3f278c",
                   }}
                 >
                   Response
@@ -593,7 +598,7 @@ function StyledForm() {
                     fontWeight: "bold",
                     fontSize: "1.2rem",
                     textAlign: "center",
-                    borderBottom: "1px solid #504b5f",
+                    borderBottom: "1px solid #3f278c",
                   }}
                 >
                   Links
@@ -625,8 +630,8 @@ function StyledForm() {
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         verticalAlign: "top",
-                        borderRight: "1px solid #504b5f",
-                        borderBottom: "1px solid #504b5f",
+                        borderRight: "1px solid #3f278c",
+                        borderBottom: "1px solid #3f278c",
                       }}
                     >
                       {item.prompt}
@@ -634,8 +639,8 @@ function StyledForm() {
                     <TableCell
                       sx={{
                         color: "text.primary",
-                        borderRight: "1px solid #504b5f",
-                        borderBottom: "1px solid #504b5f",
+                        borderRight: "1px solid #3f278c",
+                        borderBottom: "1px solid #3f278c",
                         "&:last-child": {
                           borderRight: "none",
                         },
@@ -687,7 +692,7 @@ function StyledForm() {
                         alignItems: "top",
                         maxHeight: "min-content",
                         verticalAlign: "top",
-                        borderBottom: "1px solid #504b5f",
+                        borderBottom: "1px solid #3f278c",
                       }}
                     >
                       {item.links && item.links.length > 0 && (

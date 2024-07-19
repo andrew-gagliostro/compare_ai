@@ -1,3 +1,4 @@
+// api/transcribe/[id].tsx
 import { NextApiRequest, NextApiResponse } from "next";
 import formidable, { File, IncomingForm } from "formidable";
 import fs from "fs";
@@ -11,7 +12,10 @@ import QueryHistory from "@/models/QueryHistory";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-export const transcribeAudio = async (filePath: string): Promise<any> => {
+export const transcribeAudio = async (
+  filePath: string,
+  prompt: string | null
+): Promise<any> => {
   const audioStream = fs.createReadStream(filePath);
 
   const transcribeResponse = await openai.audio.transcriptions.create({
@@ -36,6 +40,13 @@ export const transcribeAudio = async (filePath: string): Promise<any> => {
       content: JSON.stringify(transcribeResponse, null, 4),
     },
   ];
+
+  if (prompt) {
+    messages.push({
+      role: "system",
+      content: `Additionally, answer the following question based on the transcription: ${prompt}`,
+    });
+  }
 
   let aiResponse = await openai.chat.completions.create({
     model: "gpt-4o",
@@ -98,10 +109,22 @@ class Response extends ResponseHelper {
       const newFilePath = `${audioFile.filepath}.m4a`;
       fs.renameSync(audioFile.filepath, newFilePath);
 
-      const transcription = await transcribeAudio(newFilePath);
+      const queryHistory = await QueryHistory.findById(id);
+      if (!queryHistory) {
+        return {
+          status: 404,
+          success: false,
+          message: "Query history not found",
+        };
+      }
+
+      const transcription = await transcribeAudio(
+        newFilePath,
+        queryHistory.prompt
+      );
       fs.unlinkSync(newFilePath); // Clean up the uploaded file
 
-      const queryHistory = await QueryHistory.findByIdAndUpdate(
+      await QueryHistory.findByIdAndUpdate(
         id,
         { $set: { response: transcription } },
         { new: true }

@@ -19,6 +19,12 @@ import {
   TableRow,
   TableCell,
   TableHead,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
@@ -31,6 +37,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { AuthCtx } from "@/context/AuthContext";
 import { UserModel } from "@/models/User";
 import { QueryHistoryModel } from "@/models/QueryHistory";
+import { styled } from "@mui/system";
 
 interface FileWithPreview extends File {
   preview: string;
@@ -40,6 +47,8 @@ function TranscriptionForm() {
   const [audioFile, setAudioFile] = useState<FileWithPreview | null>(null);
   const [response, setResponse] = useState<string | null>(null);
   const [history, setHistory] = useState<QueryHistoryModel[]>([]);
+  const [analysisType, setAnalysisType] = useState("TRANSCRIPTION_ONLY");
+  const [prompt, setPrompt] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { getSession } = useContext(AuthCtx);
   const [user, setUser] = useState<UserModel | null>(null);
@@ -103,7 +112,10 @@ function TranscriptionForm() {
 
     try {
       const postData = {
-        prompt: "Transcription request",
+        prompt:
+          analysisType === "TRANSCRIPTION_WITH_ANALYSIS"
+            ? prompt
+            : "Transcription request",
         links: [],
         response: null,
         queryType: "TRANSCRIPTION",
@@ -157,40 +169,108 @@ function TranscriptionForm() {
         Generate Transcription
       </Typography>
       <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-        <input
-          ref={fileInputRef}
-          type="file"
-          hidden
-          onChange={handleFileChange}
-          accept="audio/*"
-        />
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => fileInputRef.current?.click()}
-            sx={{ mb: 2, maxWidth: "fit-content" }}
+        <Box sx={{ display: "flex", gap: 3 }}>
+          <Tabs
+            value={analysisType}
+            onChange={(e, newValue) => setAnalysisType(newValue)}
+            indicatorColor="secondary"
+            textColor="primary"
+            variant="fullWidth"
+            sx={{ mb: 2 }}
+            orientation="vertical"
+            // TabIndicatorProps={{
+            //   sx: {
+            //     left: 0,
+            //     right: "auto",
+            //   },
+            // }}
           >
-            Choose File
-          </Button>
-          {audioFile && (
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Typography variant="body1" sx={{ flexGrow: 1 }}>
-                {audioFile.name}
-              </Typography>
-              <IconButton onClick={handleRemoveFile}>
-                <DeleteIcon />
-              </IconButton>
+            <Tab
+              label="Transcription Only"
+              value="TRANSCRIPTION_ONLY"
+              sx={{
+                // border:
+                //   analysisType == "TRANSCRIPTION_ONLY"
+                //     ? "2px solid #3f278c"
+                //     : "none",
+                backgroundColor:
+                  analysisType == "TRANSCRIPTION_ONLY"
+                    ? "rgba(0, 0, 0, 0.1)"
+                    : "null",
+              }}
+            />
+            <Tab
+              label="Transcription With Assistant Analysis"
+              value="TRANSCRIPTION_WITH_ANALYSIS"
+              sx={{
+                //   border:
+                //     analysisType != "TRANSCRIPTION_ONLY"
+                //       ? "2px solid #3f278c"
+                //       : "none",
+                //   borderRadius: 1,
+                backgroundColor:
+                  analysisType == "TRANSCRIPTION_WITH_ANALYSIS"
+                    ? "rgba(0, 0, 0, 0.1)"
+                    : "null",
+              }}
+            />
+          </Tabs>
+          <Box
+            sx={{ display: "flex", flexDirection: "column", minWidth: "70%" }}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              hidden
+              onChange={handleFileChange}
+              accept="audio/*"
+            />
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => fileInputRef.current?.click()}
+                sx={{ mb: 2, maxWidth: "fit-content" }}
+              >
+                Choose File
+              </Button>
+              {audioFile && (
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <Typography variant="body1" sx={{ flexGrow: 1 }}>
+                    {audioFile.name}
+                  </Typography>
+                  <IconButton onClick={handleRemoveFile}>
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
+              )}
+              {analysisType === "TRANSCRIPTION_WITH_ANALYSIS" && (
+                <TextField
+                  label="What would you like to know about this transcription?"
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  variant="outlined"
+                  fullWidth
+                  sx={{ mb: 2 }}
+                />
+              )}
+              <Button
+                type="submit"
+                variant="contained"
+                color="secondary"
+                disabled={
+                  (analysisType == "TRANSCRIPTION_WITH_ANALYSIS" &&
+                    (!prompt || !audioFile)) ||
+                  (analysisType == "TRANSCRIPTION_ONLY" && !audioFile)
+                    ? true
+                    : false
+                }
+                sx={{ mt: 2 }}
+              >
+                Submit
+              </Button>
             </Box>
-          )}
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            sx={{ mt: 2 }}
-          >
-            Submit
-          </Button>
+          </Box>
         </Box>
       </form>
       {response === "Loading..." ? (
@@ -208,7 +288,6 @@ function TranscriptionForm() {
         <Box
           sx={{
             my: 5,
-            width: "95%",
             padding: 2,
             borderRadius: 1,
             flexDirection: "column",
@@ -269,12 +348,10 @@ function TranscriptionForm() {
             borderRadius: 2,
             overflowX: "auto", // Allows horizontal scrolling
             width: "100%",
-            // Ensures table is not wider than the screen on mobile devices
             maxWidth: {
               xs: "100vw", // Adjust for extra small screens
               sm: "100%", // Adjust for small screens and up
             },
-            // Ensures the table is fully visible on small devices by subtracting potential margins/paddings
             marginLeft: { xs: "-16px", sm: "auto" },
             marginRight: { xs: "-16px", sm: "auto" },
             "&::-webkit-scrollbar": {
@@ -290,15 +367,17 @@ function TranscriptionForm() {
             aria-label="transcription history table"
           >
             <TableHead sx={{ backgroundColor: "secondary.main" }}>
-              <TableRow sx={{ textAlign: "center" }}>
+              <TableRow
+                sx={{ textAlign: "center", borderBottom: "2px solid black" }}
+              >
                 <TableCell
                   sx={{
                     color: "common.white",
                     fontWeight: "bold",
                     fontSize: "1.2rem",
                     textAlign: "center",
-                    borderRight: "1px solid #504b5f",
-                    borderBottom: "1px solid #504b5f",
+                    borderRight: "1px solid black",
+                    borderBottom: "1px solid #3f278c",
                   }}
                 >
                   Created
@@ -309,8 +388,8 @@ function TranscriptionForm() {
                     fontWeight: "bold",
                     fontSize: "1.2rem",
                     textAlign: "center",
-                    borderRight: "1px solid #504b5f",
-                    borderBottom: "1px solid #504b5f",
+                    borderRight: "1px solid #3f278c",
+                    borderBottom: "1px solid #3f278c",
                   }}
                 >
                   Transcription
@@ -340,8 +419,8 @@ function TranscriptionForm() {
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       verticalAlign: "top",
-                      borderRight: "1px solid #504b5f",
-                      borderBottom: "1px solid #504b5f",
+                      borderRight: "1px solid #3f278c",
+                      borderBottom: "1px solid #3f278c",
                     }}
                   >
                     {new Date(item.createdAt).toLocaleString("en-US", {
@@ -356,8 +435,8 @@ function TranscriptionForm() {
                   <TableCell
                     sx={{
                       color: "text.primary",
-                      borderRight: "1px solid #504b5f",
-                      borderBottom: "1px solid #504b5f",
+                      borderRight: "1px solid #3f278c",
+                      borderBottom: "1px solid #3f278c",
                       "&:last-child": {
                         borderRight: "none",
                       },
@@ -366,7 +445,6 @@ function TranscriptionForm() {
                     <Box
                       sx={{
                         my: 1,
-                        width: "95%",
                         padding: 2,
                         borderRadius: 1,
                         flexDirection: "column",
@@ -376,12 +454,10 @@ function TranscriptionForm() {
                         fontSize: "medium",
                         textAlign: "left",
                         overflowX: "auto", // Allows horizontal scrolling
-                        // Ensures table is not wider than the screen on mobile devices
                         maxWidth: {
                           xs: "100vw", // Adjust for extra small screens
                           sm: "100%", // Adjust for small screens and up
                         },
-                        // Ensures the table is fully visible on small devices by subtracting potential margins/paddings
                         marginLeft: { xs: "-16px", sm: "auto" },
                         marginRight: { xs: "-16px", sm: "auto" },
                         "&::-webkit-scrollbar": {

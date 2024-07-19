@@ -1,7 +1,7 @@
 import { createTheme, responsiveFontSizes } from "@mui/material";
 
 export const primary = "#7a808d";
-export const secondary = "#857D9E";
+export const secondary = "#3f278c";
 
 const theme = createTheme({
   palette: {
@@ -21,7 +21,7 @@ const theme = createTheme({
       main: "#f44336",
       contrastText: "#fff",
     },
-    divider: "#857D9E",
+    divider: "#3f278c",
   },
   typography: {
     fontFamily: [
