@@ -97,7 +97,7 @@ function StyledForm() {
 
   const fetchQueryHistory = async () => {
     try {
-      const res = await axios.get(`/api/queryHistory`); // replace with the right endpoint
+      const res = await axios.get(`/api/queryHistory?queryType=WEB_FILE_SCRAPE`); // replace with the right endpoint
       // Sort the history from most recent to oldest based on the createdAt timestamp
       const sortedHistory = res.data.result.sort(
         (a, b) =>
@@ -175,6 +175,7 @@ function StyledForm() {
           status: "Submitted",
         })),
         response: null,
+        queryType: "WEB_FILE_SCRAPE",
       };
 
       const postResponse = await axios.post(`/api/queryHistory`, postData);
