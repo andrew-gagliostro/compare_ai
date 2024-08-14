@@ -1,3 +1,4 @@
+import { PutBlobResult } from "@vercel/blob";
 import mongoose from "mongoose";
 
 enum Status {
@@ -32,6 +33,7 @@ export interface QueryHistoryModel {
   queryType: QueryType; // Add this line
   messages?: Array<Object>;
   createdAt: string;
+  blob?: PutBlobResult;
 }
 
 const queryHistorySchema = new mongoose.Schema<QueryHistoryModel>(
@@ -76,6 +78,10 @@ const queryHistorySchema = new mongoose.Schema<QueryHistoryModel>(
     },
     messages: {
       type: [Object],
+      required: false,
+    },
+    blob: {
+      type: Object,
       required: false,
     },
   },

@@ -1,4 +1,3 @@
-// api/transcribe/[id].tsx
 import { NextApiRequest, NextApiResponse } from "next";
 import formidable, { File, IncomingForm } from "formidable";
 import fs from "fs";
@@ -9,6 +8,7 @@ import OpenAI from "openai";
 import mime from "mime-types";
 import { ChatCompletionMessageParam } from "openai/resources";
 import QueryHistory from "@/models/QueryHistory";
+import { put, PutBlobResult } from "@vercel/blob";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -109,6 +109,19 @@ class Response extends ResponseHelper {
       const newFilePath = `${audioFile.filepath}.m4a`;
       fs.renameSync(audioFile.filepath, newFilePath);
 
+      // Save the audio file to blob storage
+
+      const blob: PutBlobResult = await put(
+        `/audio/${id}.m4a`,
+        fs.createReadStream(newFilePath),
+        {
+          access: "public",
+          addRandomSuffix: false,
+        }
+      );
+
+      console.log("SAVED TO BLOB");
+
       const queryHistory = await QueryHistory.findById(id);
       if (!queryHistory) {
         return {
@@ -126,7 +139,7 @@ class Response extends ResponseHelper {
 
       await QueryHistory.findByIdAndUpdate(
         id,
-        { $set: { response: transcription } },
+        { $set: { response: transcription, blob: blob } },
         { new: true }
       );
 
