@@ -25,14 +25,14 @@ const transcribeAudioChunk = async (
   const audioStream = fs.createReadStream(chunkPath);
   console.log("transcribing chunk: " + chunkPath);
 
-  const transcribeResponse = await openai.audio.transcriptions.create({
+  const transcribeResponse: any = await openai.audio.transcriptions.create({
     file: audioStream,
     model: "whisper-1",
     prompt:
       "Kindly provide a transcription in English, ensuring to include appropriate capitalization and punctuation as needed.",
-    response_format: "text",
-    // response_format: "verbose_json",
-    // timestamp_granularities: ["segment"],
+    // response_format: "text",
+    response_format: "verbose_json",
+    timestamp_granularities: ["segment"],
   });
 
   console.log(
@@ -42,7 +42,11 @@ const transcribeAudioChunk = async (
       4
     )}`
   );
-  return transcribeResponse;
+  return transcribeResponse.segments.map((segment: any) => ({
+    text: segment.text,
+    start: segment.start,
+    end: segment.end,
+  }));
 };
 
 const splitAudioFile = async (filePath: string): Promise<string[]> => {
@@ -93,7 +97,7 @@ const transcribeAudio = async (
   for (const chunkPath of chunkPaths) {
     try {
       const transcribeResponse = await transcribeAudioChunk(chunkPath, prompt);
-      transcriptions.push(transcribeResponse);
+      transcriptions.push(...transcribeResponse);
     } catch (error) {
       console.error(`Failed to transcribe chunk: ${chunkPath}`, error);
     }
@@ -106,13 +110,13 @@ const transcribeAudio = async (
   let messages: any[] = [
     {
       role: "system",
-      // content:
-      //   'You will be provided with a object representing a transcription of an audio recording. \
-      //   This object will have fields "text" as well as "segments", representing the whole text as well as timestamped segments.\
-      //   Please respond with (and only with) a formatted markdown representation of the transcription, including timestamps between suspected changes of speakers and/or new sentences/breaks in speaking.',
       content:
-        "You will be provided with a object representing a transcription of an audio recording. \
-        Please respond with (and only with) a formatted markdown representation of the transcription, breaks between suspected changes of speakers and/or new sentences/breaks in speaking.",
+        'You will be provided with a object representing a transcription of an audio recording. \
+        This object will have fields "text" as well as "segments", representing the whole text as well as timestamped segments.\
+        Please respond with (and only with) a formatted markdown representation of the transcription, including timestamps between suspected changes of speakers and/or new sentences/breaks in speaking.',
+      // content:
+      //   "You will be provided with a object representing a transcription of an audio recording. \
+      //   Please respond with (and only with) a formatted markdown representation of the transcription, without too many words on a single line, proper punctuation, line breaks between suspected changes of speakers and/or new sentences/breaks in speaking.",
     },
     {
       role: "user",
@@ -130,7 +134,7 @@ const transcribeAudio = async (
   let aiResponse = await openai.chat.completions.create({
     model: "gpt-4o",
     messages: messages as ChatCompletionMessageParam[],
-    temperature: 0.5,
+    temperature: 0.25,
   });
 
   let response = aiResponse.choices[0].message.content;
@@ -190,16 +194,16 @@ class Response extends ResponseHelper {
       fs.renameSync(audioFile.filepath, newFilePath);
 
       // Save the audio file to blob storage
-      const blob: PutBlobResult = await put(
-        `/audio/${id}.m4a`,
-        fs.createReadStream(newFilePath),
-        {
-          access: "public",
-          addRandomSuffix: false,
-        }
-      );
+      // const blob: PutBlobResult = await put(
+      //   `/audio/${id}.m4a`,
+      //   fs.createReadStream(newFilePath),
+      //   {
+      //     access: "public",
+      //     addRandomSuffix: false,
+      //   }
+      // );
 
-      console.log("SAVED TO BLOB");
+      // console.log("SAVED TO BLOB");
 
       const queryHistory = await QueryHistory.findById(id);
       if (!queryHistory) {
@@ -218,7 +222,7 @@ class Response extends ResponseHelper {
 
       await QueryHistory.findByIdAndUpdate(
         id,
-        { $set: { response: transcription, blob: blob } },
+        { $set: { response: transcription /*blob: blob*/ } },
         { new: true }
       );
 

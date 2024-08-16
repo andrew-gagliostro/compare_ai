@@ -42,7 +42,7 @@ export default function Home() {
             sx={{ textTransform: "none", fontWeight: "bold" }}
           />
           <Tab
-            label="Transcribe Audio"
+            label="Transcribe Audio (Beta)"
             sx={{ textTransform: "none", fontWeight: "bold" }}
           />
         </Tabs>
