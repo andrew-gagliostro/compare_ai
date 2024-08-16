@@ -183,8 +183,11 @@ function TranscriptionForm() {
         justifyContent: "center",
       }}
     >
-      <Typography variant="h5" sx={{ mb: 2 }}>
+      <Typography variant="h5" sx={{ mb: 1 }}>
         Generate Transcription
+      </Typography>
+      <Typography sx={{ mb: 2 }}>
+        Currently, we only support .m4a audio files under 25mb.
       </Typography>
       <form onSubmit={handleSubmit} style={{ width: "100%" }}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
