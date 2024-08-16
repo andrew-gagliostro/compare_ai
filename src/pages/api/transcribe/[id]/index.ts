@@ -9,14 +9,28 @@ import mime from "mime-types";
 import { ChatCompletionMessageParam } from "openai/resources";
 import QueryHistory from "@/models/QueryHistory";
 import { put, PutBlobResult } from "@vercel/blob";
-import ffmpeg from "fluent-ffmpeg";
-import ffmpegPath from "ffmpeg-static";
+import { FFmpeg } from "@ffmpeg/ffmpeg";
+import { toBlobURL, fetchFile } from "@ffmpeg/util";
 
-ffmpeg.setFfmpegPath(ffmpegPath);
+const FFMPEG_CORE_VERSION = "0.12.5";
+const ffmpeg = new FFmpeg();
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const MAX_CHUNK_SIZE = 20 * 1024 * 1024; // 20 MB
+
+const loadFFmpeg = async () => {
+  const baseURL = `https://unpkg.com/@ffmpeg/core-mt@${FFMPEG_CORE_VERSION}/dist/umd`;
+
+  await ffmpeg.load({
+    coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
+    wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, "application/wasm"),
+    workerURL: await toBlobURL(
+      `${baseURL}/ffmpeg-core.worker.js`,
+      "text/javascript"
+    ),
+  });
+};
 
 const transcribeAudioChunk = async (
   chunkPath: string,
@@ -30,7 +44,6 @@ const transcribeAudioChunk = async (
     model: "whisper-1",
     prompt:
       "Kindly provide a transcription in English, ensuring to include appropriate capitalization and punctuation as needed.",
-    // response_format: "text",
     response_format: "verbose_json",
     timestamp_granularities: ["segment"],
   });
@@ -52,37 +65,35 @@ const transcribeAudioChunk = async (
 const splitAudioFile = async (filePath: string): Promise<string[]> => {
   const chunkPaths: string[] = [];
   const outputDir = path.dirname(filePath);
-  const outputPattern = path.join(outputDir, "chunk_%03d.m4a");
+  const outputPattern = "chunk_%03d.m4a";
 
-  await new Promise<void>((resolve, reject) => {
-    ffmpeg(filePath)
-      .outputOptions([
-        "-f",
-        "segment",
-        "-segment_time",
-        "00:10:00", // Approximate duration of each segment
-        "-c",
-        "copy",
-      ])
-      .output(outputPattern)
-      .on("end", () => {
-        console.log("Splitting finished");
-        resolve();
-      })
-      .on("error", (err) => {
-        console.error("Error during splitting:", err);
-        reject(err);
-      })
-      .run();
-  });
+  if (!ffmpeg.loaded) {
+    await loadFFmpeg();
+  }
 
-  // Collect the generated chunk files
-  const files = fs.readdirSync(outputDir);
-  files.forEach((file) => {
+  await ffmpeg.writeFile("input.m4a", await fetchFile(filePath));
+
+  await ffmpeg.exec([
+    "-i",
+    "input.m4a",
+    "-f",
+    "segment",
+    "-segment_time",
+    "600", // 10 minutes in seconds
+    "-c",
+    "copy",
+    outputPattern,
+  ]);
+
+  const files = await ffmpeg.listDir("readdir");
+  files.forEach(async (file) => {
     if (file.startsWith("chunk_") && file.endsWith(".m4a")) {
-      chunkPaths.push(path.join(outputDir, file));
+      const chunkPath = path.join(outputDir, file);
+      fs.writeFileSync(chunkPath, await ffmpeg.readFile(file));
+      chunkPaths.push(chunkPath);
     }
   });
+
   console.log(`CHUNKPATHS: ${chunkPaths}`);
   return chunkPaths;
 };
@@ -114,9 +125,6 @@ const transcribeAudio = async (
         'You will be provided with a object representing a transcription of an audio recording. \
         This object will have fields "text" as well as "segments", representing the whole text as well as timestamped segments.\
         Please respond with (and only with) a formatted markdown representation of the transcription, including timestamps between suspected changes of speakers and/or new sentences/breaks in speaking.',
-      // content:
-      //   "You will be provided with a object representing a transcription of an audio recording. \
-      //   Please respond with (and only with) a formatted markdown representation of the transcription, without too many words on a single line, proper punctuation, line breaks between suspected changes of speakers and/or new sentences/breaks in speaking.",
     },
     {
       role: "user",
@@ -138,8 +146,6 @@ const transcribeAudio = async (
   });
 
   let response = aiResponse.choices[0].message.content;
-  // let plainResponse = response.replace(/\\n/g, "\n");
-  // plainResponse = plainResponse.replace(/^"|"$/g, "");
   let plainResponse = response.replace(/```sh/g, "```bash");
 
   return plainResponse;
@@ -185,13 +191,37 @@ class Response extends ResponseHelper {
       }
 
       // Ensure the MIME type is correct
-      if (audioFile.mimetype !== "audio/m4a") {
-        audioFile.mimetype = "audio/m4a";
+      const supportedMimeTypes = [
+        "audio/mpeg",
+        "audio/mp4",
+        "audio/mpeg",
+        "audio/mpga",
+        "audio/m4a",
+        "audio/wav",
+        "audio/webm",
+      ];
+
+      if (!supportedMimeTypes.includes(audioFile.mimetype)) {
+        return {
+          status: 400,
+          success: false,
+          message: "Unsupported audio format",
+        };
       }
 
-      // Rename the file if necessary
+      // Convert the file to m4a if it's not already in that format
       const newFilePath = `${audioFile.filepath}.m4a`;
-      fs.renameSync(audioFile.filepath, newFilePath);
+      if (audioFile.mimetype !== "audio/m4a") {
+        if (!ffmpeg.isLoaded()) {
+          await loadFFmpeg();
+        }
+
+        await ffmpeg.writeFile("input", await fetchFile(audioFile.filepath));
+        await ffmpeg.exec(["-i", "input", "output.m4a"]);
+        fs.writeFileSync(newFilePath, ffmpeg.readFile("output.m4a"));
+      } else {
+        fs.renameSync(audioFile.filepath, newFilePath);
+      }
 
       // Save the audio file to blob storage
       // const blob: PutBlobResult = await put(
