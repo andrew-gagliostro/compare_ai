@@ -313,11 +313,8 @@ function TranscriptionForm() {
             },
           }}
         >
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeSanitize, rehypePrism]}
-          >
-            {response.replace(/^"|"$/g, "")}
+          <ReactMarkdown remarkPlugins={[]} rehypePlugins={[]}>
+            {response}
           </ReactMarkdown>
         </Box>
       ) : null}
@@ -456,6 +453,10 @@ function TranscriptionForm() {
                         fontSize: "medium",
                         textAlign: "left",
                         overflowX: "auto", // Allows horizontal scrolling
+                        maxWidth: {
+                          xs: "100vw", // Adjust for extra small screens
+                          sm: "100%", // Adjust for small screens and up
+                        },
                         marginLeft: { xs: "-16px", sm: "auto" },
                         marginRight: { xs: "-16px", sm: "auto" },
                         "&::-webkit-scrollbar": {
@@ -466,32 +467,6 @@ function TranscriptionForm() {
                         },
                       }}
                     >
-                      <Box>
-                        <Button
-                          sx={{
-                            display: "flex",
-                            flexDirection: "row",
-                            alignItems: "center",
-                            alignContent: "center",
-                            fontWeight: "bold",
-                          }}
-                          variant="outlined"
-                          color="secondary"
-                          onClick={async () => {
-                            await handlePlayAudio(item._id);
-                          }}
-                        >
-                          <AudioFile />
-                          Play Audio
-                        </Button>
-                        <audio
-                          id={`audio-${item._id}`}
-                          controls
-                          style={{ marginTop: "10px", width: "50%" }}
-                        >
-                          Your browser does not support the audio element.
-                        </audio>
-                      </Box>
                       <ReactMarkdown remarkPlugins={[]} rehypePlugins={[]}>
                         {item.response}
                       </ReactMarkdown>
