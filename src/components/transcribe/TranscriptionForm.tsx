@@ -19,10 +19,6 @@ import {
   TableRow,
   TableCell,
   TableHead,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Tabs,
   Tab,
 } from "@mui/material";
@@ -34,10 +30,12 @@ import rehypeSanitize from "rehype-sanitize";
 import rehypePrism from "@mapbox/rehype-prism";
 import "prismjs/themes/prism.css"; // Ensure this CSS is imported for syntax highlighting
 import DeleteIcon from "@mui/icons-material/Delete";
+import { AudioFile } from "@mui/icons-material";
 import { AuthCtx } from "@/context/AuthContext";
 import { UserModel } from "@/models/User";
 import { QueryHistoryModel } from "@/models/QueryHistory";
 import { styled } from "@mui/system";
+import { Play } from "next/font/google";
 
 interface FileWithPreview extends File {
   preview: string;
@@ -52,6 +50,7 @@ function TranscriptionForm() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { getSession } = useContext(AuthCtx);
   const [user, setUser] = useState<UserModel | null>(null);
+  const [playingAudioId, setPlayingAudioId] = useState<string | null>(null);
 
   useEffect(() => {
     const updateUser = () => {
@@ -127,7 +126,7 @@ function TranscriptionForm() {
       const formData = new FormData();
       formData.append("audio", audioFile);
 
-      axios.post(`/api/transcribe/${historyId}`, formData, {
+      await axios.post(`/api/transcribe/${historyId}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -150,6 +149,25 @@ function TranscriptionForm() {
       setResponse("An error occurred. Please try again.");
     } finally {
       handleRemoveFile();
+    }
+  };
+
+  const handlePlayAudio = async (id: string) => {
+    try {
+      const response = await axios.get(`/api/audio/${id}`, {
+        responseType: "blob",
+      });
+      const audioBlob = new Blob([response.data], { type: "audio/m4a" });
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audioElement = document.getElementById(
+        `audio-${id}`
+      ) as HTMLAudioElement;
+      if (audioElement) {
+        audioElement.src = audioUrl;
+        audioElement.play();
+      }
+    } catch (error) {
+      console.error("Error fetching audio URL:", error);
     }
   };
 
@@ -177,21 +195,11 @@ function TranscriptionForm() {
             textColor="primary"
             variant="fullWidth"
             sx={{ mb: 2 }}
-            // TabIndicatorProps={{
-            //   sx: {
-            //     left: 0,
-            //     right: "auto",
-            //   },
-            // }}
           >
             <Tab
               label="Transcription Only"
               value="TRANSCRIPTION_ONLY"
               sx={{
-                // border:
-                //   analysisType == "TRANSCRIPTION_ONLY"
-                //     ? "2px solid #1D29BF"
-                //     : "none",
                 backgroundColor:
                   analysisType == "TRANSCRIPTION_ONLY"
                     ? "rgba(0, 0, 0, 0.1)"
@@ -202,11 +210,6 @@ function TranscriptionForm() {
               label="Transcription With Assistant Analysis"
               value="TRANSCRIPTION_WITH_ANALYSIS"
               sx={{
-                //   border:
-                //     analysisType != "TRANSCRIPTION_ONLY"
-                //       ? "2px solid #1D29BF"
-                //       : "none",
-                //   borderRadius: 1,
                 backgroundColor:
                   analysisType == "TRANSCRIPTION_WITH_ANALYSIS"
                     ? "rgba(0, 0, 0, 0.1)"
@@ -310,11 +313,8 @@ function TranscriptionForm() {
             },
           }}
         >
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeSanitize, rehypePrism]}
-          >
-            {response.replace(/^"|"$/g, "")}
+          <ReactMarkdown remarkPlugins={[]} rehypePlugins={[]}>
+            {response}
           </ReactMarkdown>
         </Box>
       ) : null}
@@ -467,10 +467,7 @@ function TranscriptionForm() {
                         },
                       }}
                     >
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        rehypePlugins={[rehypeSanitize, rehypePrism]}
-                      >
+                      <ReactMarkdown remarkPlugins={[]} rehypePlugins={[]}>
                         {item.response}
                       </ReactMarkdown>
                     </Box>

@@ -265,10 +265,11 @@ class Response extends ResponseHelper {
       });
 
       // log the response and return the response to client with 200 status code
-      console.log(aiResponse);
-      let response = JSON.stringify(aiResponse.choices[0].message.content);
-      let plainResponse = response.replace(/\\n/g, "\n");
-      plainResponse = plainResponse.replace(/^"|"$/g, "");
+      console.log(JSON.stringify(aiResponse, null, 4));
+      let response = aiResponse.choices[0].message.content;
+      // let plainResponse = response.replace(/\\n/g, "\n");
+      // plainResponse = plainResponse.replace(/^"|"$/g, "");
+      let plainResponse = response.replace(/```sh/g, "```bash");
       const docWithResponse = await QueryHistory.findByIdAndUpdate(
         id,
         { $set: { response: plainResponse } },
