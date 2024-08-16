@@ -126,7 +126,7 @@ function TranscriptionForm() {
       const formData = new FormData();
       formData.append("audio", audioFile);
 
-      await axios.post(`/api/transcribe/${historyId}`, formData, {
+      axios.post(`/api/transcribe/${historyId}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
