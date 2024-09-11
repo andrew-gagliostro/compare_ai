@@ -724,26 +724,28 @@ function StyledForm() {
                           onClick={(event) =>
                             handleDownloadClick(event, item.response)
                           }
+                          sx={{ width: "fit-content" }}
                         >
-                          Download
+                          Download Response
                         </Button>
-                        <Paper>
-                          <Menu
-                            anchorEl={anchorEl}
-                            open={Boolean(anchorEl)}
-                            onClose={handleDownloadClose}
-                          >
-                            <MenuItem onClick={() => handleDownload("md")}>
-                              Markdown
-                            </MenuItem>
-                            <MenuItem onClick={() => handleDownload("pdf")}>
-                              PDF
-                            </MenuItem>
-                            <MenuItem onClick={() => handleDownload("docx")}>
-                              DOCX
-                            </MenuItem>
-                          </Menu>
-                        </Paper>
+                        {/* <Paper> */}
+                        <Menu
+                          anchorEl={anchorEl}
+                          open={Boolean(anchorEl)}
+                          onClose={handleDownloadClose}
+                          sx={{ boxShadow: "none", textShadow: "none" }}
+                        >
+                          <MenuItem onClick={() => handleDownload("md")}>
+                            Markdown
+                          </MenuItem>
+                          <MenuItem onClick={() => handleDownload("pdf")}>
+                            PDF
+                          </MenuItem>
+                          <MenuItem onClick={() => handleDownload("docx")}>
+                            DOCX
+                          </MenuItem>
+                        </Menu>
+                        {/* </Paper> */}
                         <ReactMarkdown
                           remarkPlugins={[remarkGfm]}
                           rehypePlugins={[rehypeSanitize, rehypePrism]}

@@ -97,13 +97,13 @@ const theme = createTheme({
     //     },
     //   },
     // },
-    MuiMenuList: {
-      styleOverrides: {
-        root: {
-          zIndex: 1000,
-        },
-      },
-    },
+    // MuiMenuList: {
+    //   styleOverrides: {
+    //     root: {
+    //       zIndex: 1000,
+    //     },
+    //   },
+    // },
     MuiMenuItem: {
       styleOverrides: {
         root: {
@@ -113,7 +113,8 @@ const theme = createTheme({
           "&:hover": {
             backgroundColor: "#dddddd",
           },
-          borderRadius: 5,
+          borderRadius: 0,
+          boxShadow: "none",
         },
       },
     },
