@@ -88,15 +88,15 @@ const theme = createTheme({
         },
       },
     },
-    MuiMenu: {
-      styleOverrides: {
-        paper: {
-          backgroundColor: secondary,
-          color: "#fff",
-          gap: 1,
-        },
-      },
-    },
+    // MuiMenu: {
+    //   styleOverrides: {
+    //     paper: {
+    //       backgroundColor: secondary,
+    //       color: "#fff",
+    //       gap: 1,
+    //     },
+    //   },
+    // },
     MuiMenuList: {
       styleOverrides: {
         root: {

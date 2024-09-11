@@ -22,7 +22,11 @@ import {
   TableHead,
   Paper,
   Container,
+  Menu,
+  MenuItem,
 } from "@mui/material";
+
+import { Download } from "@mui/icons-material";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"; // For expand icon
 import ExpandLessIcon from "@mui/icons-material/ExpandLess"; // For collapse icon
@@ -62,6 +66,8 @@ function StyledForm() {
   const [history, setHistory] = useState<Partial<QueryHistoryModel>[]>([]); // Add state variable for user history
   const [expandedRow, setExpandedRow] = useState(null);
   const fileInputRef = useRef(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedResponse, setSelectedResponse] = useState(null);
 
   const [user, setUser] = useState<UserModel | null>(null);
   const { getSession } = useContext(AuthCtx);
@@ -234,6 +240,39 @@ function StyledForm() {
     } catch (error) {
       console.error("Error submitting user history:", error);
       setResponse("An error occurred. Please try again.");
+    }
+  };
+
+  const handleDownloadClick = (event, response) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedResponse(response);
+  };
+
+  const handleDownloadClose = () => {
+    setAnchorEl(null);
+    setSelectedResponse(null);
+  };
+
+  const handleDownload = async (format) => {
+    try {
+      const res = await axios.post(
+        `/api/download`,
+        { format, response: selectedResponse },
+        { responseType: "blob" }
+      );
+
+      const blob = new Blob([res.data], { type: res.headers["content-type"] });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `response.${format}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (error) {
+      console.error("Error downloading file:", error);
+    } finally {
+      handleDownloadClose();
     }
   };
 
@@ -679,6 +718,32 @@ function StyledForm() {
                           },
                         }}
                       >
+                        <Button
+                          variant="contained"
+                          startIcon={<Download />}
+                          onClick={(event) =>
+                            handleDownloadClick(event, item.response)
+                          }
+                        >
+                          Download
+                        </Button>
+                        <Paper>
+                          <Menu
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl)}
+                            onClose={handleDownloadClose}
+                          >
+                            <MenuItem onClick={() => handleDownload("md")}>
+                              Markdown
+                            </MenuItem>
+                            <MenuItem onClick={() => handleDownload("pdf")}>
+                              PDF
+                            </MenuItem>
+                            <MenuItem onClick={() => handleDownload("docx")}>
+                              DOCX
+                            </MenuItem>
+                          </Menu>
+                        </Paper>
                         <ReactMarkdown
                           remarkPlugins={[remarkGfm]}
                           rehypePlugins={[rehypeSanitize, rehypePrism]}
