@@ -50,6 +50,7 @@ import { AuthCtx } from "@/context/AuthContext";
 import { primary } from "@/theme";
 import StatusIndicator from "./StatusIndicator";
 import { UserModel } from "@/models/User";
+import DownloadModal from "./DownloadModal";
 
 interface FileWithPreview extends File {
   preview: string;
@@ -71,6 +72,7 @@ function StyledForm() {
   const { getSession } = useContext(AuthCtx);
   const session = getSession();
   const [user, setUser] = useState<UserModel | null>(session?.user);
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     const updateUser = () => {
@@ -243,17 +245,20 @@ function StyledForm() {
     }
   };
 
-  const handleDownloadClick = (event, response) => {
-    setAnchorEl(event.currentTarget);
+  const [downloadModalOpen, setDownloadModalOpen] = useState(false);
+
+  const handleDownloadClick = (response) => {
     setSelectedResponse(response);
+    setDownloadModalOpen(true);
   };
 
   const handleDownloadClose = () => {
-    setAnchorEl(null);
+    setDownloadModalOpen(false);
     setSelectedResponse(null);
   };
 
   const handleDownload = async (format) => {
+    setDownloading(true);
     try {
       const res = await axios.post(
         `/api/download`,
@@ -272,6 +277,7 @@ function StyledForm() {
     } catch (error) {
       console.error("Error downloading file:", error);
     } finally {
+      setDownloading(false);
       handleDownloadClose();
     }
   };
@@ -309,6 +315,12 @@ function StyledForm() {
         justifyContent: "center",
       }}
     >
+      <DownloadModal
+        open={downloadModalOpen}
+        handleClose={handleDownloadClose}
+        handleDownload={handleDownload}
+        loading={downloading}
+      />
       <Box
         sx={{
           alignSelf: "flex-start",
@@ -521,7 +533,7 @@ function StyledForm() {
                 sx={{
                   my: 1,
                   width: "95%",
-                  padding: 2,
+                  paddingX: 1,
                   borderRadius: 1,
                   flexDirection: "column",
                   display: "flex",
@@ -542,6 +554,14 @@ function StyledForm() {
                   },
                 }}
               >
+                <Button
+                  variant="contained"
+                  startIcon={<Download />}
+                  onClick={() => handleDownloadClick(response)}
+                  sx={{ mt: 2 }}
+                >
+                  Download Response
+                </Button>
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   rehypePlugins={[rehypeSanitize, rehypePrism]}
@@ -711,35 +731,14 @@ function StyledForm() {
                           },
                         }}
                       >
-                        <Box sx={{ display: "flex" }}>
-                          <Button
-                            variant="contained"
-                            startIcon={<Download />}
-                            onClick={(event) =>
-                              handleDownloadClick(event, item.response)
-                            }
-                            sx={{ width: "fit-content" }}
-                          >
-                            Download Response
-                          </Button>
-                          {/* <Paper> */}
-                          <Menu
-                            anchorEl={anchorEl}
-                            open={Boolean(anchorEl)}
-                            onClose={handleDownloadClose}
-                            sx={{ boxShadow: "none", textShadow: "none" }}
-                          >
-                            <MenuItem onClick={() => handleDownload("md")}>
-                              Markdown
-                            </MenuItem>
-                            <MenuItem onClick={() => handleDownload("pdf")}>
-                              PDF
-                            </MenuItem>
-                            <MenuItem onClick={() => handleDownload("docx")}>
-                              DOCX
-                            </MenuItem>
-                          </Menu>
-                        </Box>
+                        <Button
+                          variant="contained"
+                          startIcon={<Download />}
+                          onClick={() => handleDownloadClick(item.response)}
+                        >
+                          Download Response
+                        </Button>
+                        {/* <Paper> */}
                         {/* </Paper> */}
                         <ReactMarkdown
                           remarkPlugins={[remarkGfm]}
