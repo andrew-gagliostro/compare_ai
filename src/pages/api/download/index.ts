@@ -1,17 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { mdToPdf } from "md-to-pdf";
 import { unified } from "unified";
-import markdown, { Options } from "remark-parse";
+import markdown from "remark-parse";
 import remarkGfm from "remark-gfm";
 import docx from "remark-docx";
-import {
-  IParagraphPropertiesOptions,
-  ITableOptions,
-  ITableRowPropertiesOptions,
-} from "docx";
-import { ITableCellPropertiesOptions } from "docx/build/file/table/table-cell/table-cell-properties";
-import rehypePrism from "@mapbox/rehype-prism";
-import rehypeSanitize from "rehype-sanitize";
 
 export default async function handler(
   req: NextApiRequest,
@@ -39,20 +31,25 @@ export default async function handler(
               printBackground: true,
             },
             css: `
-                table {
-                  width: 100%;
-                  table-layout: auto;
-                  word-wrap: break-word;
-                }
-                th, td {
-                  padding: 8px;
-                  text-align: left;
-                  border: 1px solid #ddd;
-                }
-                th {
-                  background-color: #f2f2f2;
-                }
-              `,
+              table {
+                width: 100%;
+                overflow: hidden; 
+                text-overflow: ellipsis; 
+                word-wrap: break-word;
+                font-size: 8px;
+              }
+              th, td {
+                text-align: left;
+                border: 1px solid #ddd;
+                word-wrap: break-word;
+              }
+              th {
+                background-color: #f2f2f2;
+              }
+              .markdown-body {
+                font-size: 10px;
+              }
+            `,
           }
         ).catch(console.error);
         if (pdf) {
@@ -65,7 +62,6 @@ export default async function handler(
         const processor = unified()
           .use(markdown)
           .use(remarkGfm)
-          .use(rehypePrism)
           .use(docx, { output: "buffer" });
         const doc = await processor.process(response);
         fileBuffer = await doc.result;

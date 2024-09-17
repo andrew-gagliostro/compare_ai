@@ -68,9 +68,9 @@ function StyledForm() {
   const fileInputRef = useRef(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedResponse, setSelectedResponse] = useState(null);
-
-  const [user, setUser] = useState<UserModel | null>(null);
   const { getSession } = useContext(AuthCtx);
+  const session = getSession();
+  const [user, setUser] = useState<UserModel | null>(session?.user);
 
   useEffect(() => {
     const updateUser = () => {
@@ -91,7 +91,7 @@ function StyledForm() {
 
     // we are not using async to wait for updateUser, so there will be a flash of page where the user is assumed not to be logged in. If we use a flag
     // check manually the first time because we won't get a Hub event // cleanup
-  }, []);
+  }, [session]);
 
   const handleRowExpandToggle = (index) => {
     if (expandedRow === index) {
@@ -487,7 +487,7 @@ function StyledForm() {
             <Box className="flex flex-col mt-10 justify-center items-center">
               <svg
                 aria-hidden="true"
-                className="w-16 h- mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-purple-600"
+                className="w-16 h- mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
                 viewBox="0 0 100 101"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -527,14 +527,10 @@ function StyledForm() {
                   display: "flex",
                   justifyContent: "flex-start",
                   color: "black",
-                  fontSize: "medium",
+                  fontSize: "small",
                   textAlign: "left",
                   overflowX: "auto", // Allows horizontal scrolling
-                  // Ensures table is not wider than the screen on mobile devices
-                  maxWidth: {
-                    xs: "100vw", // Adjust for extra small screens
-                    sm: "100%", // Adjust for small screens and up
-                  },
+                  maxWidth: "100%",
                   // Ensures the table is fully visible on small devices by subtracting potential margins/paddings
                   marginLeft: { xs: "-16px", sm: "auto" },
                   marginRight: { xs: "-16px", sm: "auto" },
@@ -574,7 +570,7 @@ function StyledForm() {
             alignSelf: "flex-start",
             color: "secondary.main",
             fontWeight: "bolder",
-            fontSize: "1.3rem",
+            fontSize: "1.1rem",
             pb: 2,
           }}
         >
@@ -614,7 +610,6 @@ function StyledForm() {
                   sx={{
                     color: "common.white",
                     fontWeight: "bold",
-                    fontSize: "1.2rem",
                     textAlign: "center",
                     borderRight: "1px solid black",
                     borderBottom: "1px solid #1D29BF",
@@ -626,7 +621,6 @@ function StyledForm() {
                   sx={{
                     color: "common.white",
                     fontWeight: "bold",
-                    fontSize: "1.2rem",
                     textAlign: "center",
                     borderRight: "1px solid black",
                     borderBottom: "1px solid #1D29BF",
@@ -638,7 +632,6 @@ function StyledForm() {
                   sx={{
                     color: "common.white",
                     fontWeight: "bold",
-                    fontSize: "1.2rem",
                     textAlign: "center",
                     borderBottom: "1px solid #1D29BF",
                   }}
@@ -699,7 +692,7 @@ function StyledForm() {
                           display: "flex",
                           justifyContent: "flex-start",
                           color: "black",
-                          fontSize: "medium",
+                          fontSize: "small",
                           textAlign: "left",
                           overflowX: "auto", // Allows horizontal scrolling
                           // Ensures table is not wider than the screen on mobile devices
@@ -718,33 +711,35 @@ function StyledForm() {
                           },
                         }}
                       >
-                        <Button
-                          variant="contained"
-                          startIcon={<Download />}
-                          onClick={(event) =>
-                            handleDownloadClick(event, item.response)
-                          }
-                          sx={{ width: "fit-content" }}
-                        >
-                          Download Response
-                        </Button>
-                        {/* <Paper> */}
-                        <Menu
-                          anchorEl={anchorEl}
-                          open={Boolean(anchorEl)}
-                          onClose={handleDownloadClose}
-                          sx={{ boxShadow: "none", textShadow: "none" }}
-                        >
-                          <MenuItem onClick={() => handleDownload("md")}>
-                            Markdown
-                          </MenuItem>
-                          <MenuItem onClick={() => handleDownload("pdf")}>
-                            PDF
-                          </MenuItem>
-                          <MenuItem onClick={() => handleDownload("docx")}>
-                            DOCX
-                          </MenuItem>
-                        </Menu>
+                        <Box sx={{ display: "flex" }}>
+                          <Button
+                            variant="contained"
+                            startIcon={<Download />}
+                            onClick={(event) =>
+                              handleDownloadClick(event, item.response)
+                            }
+                            sx={{ width: "fit-content" }}
+                          >
+                            Download Response
+                          </Button>
+                          {/* <Paper> */}
+                          <Menu
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl)}
+                            onClose={handleDownloadClose}
+                            sx={{ boxShadow: "none", textShadow: "none" }}
+                          >
+                            <MenuItem onClick={() => handleDownload("md")}>
+                              Markdown
+                            </MenuItem>
+                            <MenuItem onClick={() => handleDownload("pdf")}>
+                              PDF
+                            </MenuItem>
+                            <MenuItem onClick={() => handleDownload("docx")}>
+                              DOCX
+                            </MenuItem>
+                          </Menu>
+                        </Box>
                         {/* </Paper> */}
                         <ReactMarkdown
                           remarkPlugins={[remarkGfm]}
