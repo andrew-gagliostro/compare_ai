@@ -558,7 +558,7 @@ function StyledForm() {
                   variant="contained"
                   startIcon={<Download />}
                   onClick={() => handleDownloadClick(response)}
-                  sx={{ mt: 2 }}
+                  sx={{ my: 2 }}
                 >
                   Download Response
                 </Button>
@@ -706,7 +706,7 @@ function StyledForm() {
                       <Box
                         sx={{
                           my: 1,
-                          padding: 2,
+                          paddingX: 2,
                           borderRadius: 1,
                           flexDirection: "column",
                           display: "flex",
@@ -735,6 +735,7 @@ function StyledForm() {
                           variant="contained"
                           startIcon={<Download />}
                           onClick={() => handleDownloadClick(item.response)}
+                          sx={{ mb: 2 }}
                         >
                           Download Response
                         </Button>
