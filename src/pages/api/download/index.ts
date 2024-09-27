@@ -4,6 +4,17 @@ import { unified } from "unified";
 import markdown from "remark-parse";
 import remarkGfm from "remark-gfm";
 import docx from "remark-docx";
+import chromium from "@sparticuz/chromium";
+
+const isProduction = process.env.NODE_ENV === "production";
+
+if (isProduction) {
+  // Set graphics mode
+  chromium.setGraphicsMode = false;
+
+  // Load custom fonts
+  // await chromium.font('https://raw.githack.com/googlei18n/noto-emoji/master/fonts/NotoColorEmoji.ttf');
+}
 
 export default async function handler(
   req: NextApiRequest,
@@ -23,9 +34,21 @@ export default async function handler(
         fileExtension = "md";
         break;
       case "pdf":
+        const launchOptions = isProduction
+          ? {
+              args: chromium.args,
+              defaultViewport: chromium.defaultViewport,
+              executablePath: await chromium.executablePath(),
+              headless: chromium.headless,
+            }
+          : {};
         const pdf = await mdToPdf(
           { content: response },
           {
+            stylesheet: [
+              process.cwd() + "/node_modules/md-to-pdf/markdown.css",
+            ],
+            launch_options: launchOptions,
             pdf_options: {
               format: "A4",
               printBackground: true,
@@ -80,7 +103,10 @@ export default async function handler(
     );
     res.send(fileBuffer);
   } catch (error) {
-    console.error("Error converting file:", error);
+    console.error(
+      "NODE_ENV: " + process.env.NODE_ENV + "Error converting file:",
+      error
+    );
     res.status(500).json({ error: "Internal server error" });
   }
 }
