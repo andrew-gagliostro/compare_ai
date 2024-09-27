@@ -46,7 +46,7 @@ export default async function handler(
           { content: response },
           {
             stylesheet: [
-              process.cwd() + "/node_modules/md-to-pdf/markdown.css",
+              "https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/2.10.0/github-markdown.min.css",
             ],
             launch_options: launchOptions,
             pdf_options: {
@@ -59,7 +59,6 @@ export default async function handler(
                 overflow: hidden; 
                 text-overflow: ellipsis; 
                 word-wrap: break-word;
-                font-size: 8px;
               }
               th, td {
                 text-align: left;
@@ -95,7 +94,6 @@ export default async function handler(
       default:
         return res.status(400).json({ error: "Invalid format" });
     }
-
     res.setHeader("Content-Type", contentType);
     res.setHeader(
       "Content-Disposition",

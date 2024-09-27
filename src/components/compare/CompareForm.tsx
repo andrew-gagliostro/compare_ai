@@ -265,12 +265,12 @@ function StyledForm() {
         { format, response: selectedResponse },
         { responseType: "blob" }
       );
-
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
       const blob = new Blob([res.data], { type: res.headers["content-type"] });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `response.${format}`;
+      a.download = `response-${timestamp}.${format}`;
       document.body.appendChild(a);
       a.click();
       a.remove();
