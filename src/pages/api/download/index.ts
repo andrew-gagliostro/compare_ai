@@ -5,6 +5,7 @@ import markdown from "remark-parse";
 import remarkGfm from "remark-gfm";
 import docx from "remark-docx";
 import chromium from "@sparticuz/chromium";
+import path from "path";
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -45,13 +46,26 @@ export default async function handler(
         const pdf = await mdToPdf(
           { content: response },
           {
-            stylesheet: [
-              "https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/2.10.0/github-markdown.min.css",
-            ],
+            stylesheet: [path.join(process.cwd(), "public", "styles.min.css")],
             launch_options: launchOptions,
             pdf_options: {
               format: "A4",
               printBackground: true,
+              displayHeaderFooter: true,
+              margin: { left: 5, right: 5, top: 25, bottom: 25 },
+              footerTemplate: `
+          <style>
+            section {
+              margin: 0 auto;
+              font-size: 10px;
+            }
+          </style>
+          <section>
+            <div>
+              Page <span class="pageNumber"></span>
+              of <span class="totalPages"></span>
+            </div>
+          </section>`,
             },
             css: `
               table {
@@ -59,14 +73,23 @@ export default async function handler(
                 overflow: hidden; 
                 text-overflow: ellipsis; 
                 word-wrap: break-word;
+                font-size: 10px;
               }
               th, td {
                 text-align: left;
                 border: 1px solid #ddd;
                 word-wrap: break-word;
               }
-              th {
-                background-color: #f2f2f2;
+              table th {
+                font-weight: 600;
+                background-color: whitesmoke;
+              }
+              table tr {
+                background-color: white;
+                border-top: 1px solid gainsboro;
+              }
+              table tr:nth-child(2n) {
+                background-color: whitesmoke;
               }
               .markdown-body {
                 font-size: 10px;
@@ -94,6 +117,7 @@ export default async function handler(
       default:
         return res.status(400).json({ error: "Invalid format" });
     }
+
     res.setHeader("Content-Type", contentType);
     res.setHeader(
       "Content-Disposition",
