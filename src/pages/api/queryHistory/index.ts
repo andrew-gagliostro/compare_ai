@@ -84,7 +84,7 @@ class QueryHistoryHandler extends ResponseHelper {
         result: queryHistory,
       };
     } catch (e) {
-      console.log(e);
+      console.error("ERROR Getting Query History");
       return {
         status: 500,
         success: "get call failed!",
