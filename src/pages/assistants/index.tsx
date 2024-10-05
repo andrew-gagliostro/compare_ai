@@ -21,7 +21,7 @@ export default function Home() {
   return (
     <Box className="flex min-h-screen flex-col justify-start items-center">
       <NavBar />
-      <Box
+      {/* <Box
         sx={{
           display: "flex",
           pl: 0.5,
@@ -46,7 +46,7 @@ export default function Home() {
             sx={{ textTransform: "none", fontWeight: "bold" }}
           />
         </Tabs>
-      </Box>
+      </Box> */}
       <Box
         sx={{
           display: "flex",
