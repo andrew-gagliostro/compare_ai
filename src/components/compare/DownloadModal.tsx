@@ -57,7 +57,7 @@ const DownloadModal = ({ open, handleClose, handleDownload, loading }) => {
             <Box className="flex flex-col mt-10 justify-center items-center">
               <svg
                 aria-hidden="true"
-                className="w-16 h- mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                className="w-16 h- mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-purple-600"
                 viewBox="0 0 100 101"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"

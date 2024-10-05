@@ -306,9 +306,9 @@ function StyledForm() {
     <Paper
       elevation={3}
       sx={{
-        width: "90%",
+        width: "97%",
         my: 4,
-        p: 3,
+        p: 2,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -324,13 +324,16 @@ function StyledForm() {
       <Box
         sx={{
           alignSelf: "flex-start",
-          color: "secondary.main",
           fontWeight: "bolder",
           fontSize: "1.3rem",
           pb: 2,
         }}
       >
-        <Typography variant="h5" sx={{ mb: 2 }}>
+        <Typography
+          variant="h5"
+          color="secondary"
+          sx={{ mb: 2, fontWeight: "bold" }}
+        >
           New Query
         </Typography>
       </Box>
@@ -360,7 +363,9 @@ function StyledForm() {
               mr: 3,
             }}
           >
-            <Typography fontWeight={"bold"}>Upload CSV Files</Typography>
+            <Typography color="secondary" fontWeight={"bold"}>
+              Upload CSV Files
+            </Typography>
             <input
               ref={fileInputRef}
               type="file"
@@ -477,29 +482,30 @@ function StyledForm() {
         <Button
           type="submit"
           variant="contained"
-          sx={{
-            display: "flex",
-            maxWidth: "20%",
-            justifySelf: "center",
-            alignSelf: "center",
-            margin: "auto",
-            backgroundColor: "secondary.main",
-          }}
+          color="secondary"
+          disabled={
+            !(
+              (links && links.length) ||
+              (files && files.length) ||
+              (prompt && prompt.length)
+            )
+          }
+          sx={{ mt: 2, width: "full" }}
         >
           Submit
         </Button>
         {/* if response is null, show nothing
       if response === "Loading..." create a loading box with some sort of effect
       else print out a styled response and have is fade in with some sort of effect*/}
-        <Box sx={{ marginTop: 10 }}>
+        <Box sx={{ my: 5 }}>
           {response === null ? (
             ""
           ) : response === "Loading..." ? (
             // Spinning loading wheel saying Loading...
-            <Box className="flex flex-col mt-10 justify-center items-center">
+            <Box className="flex flex-col justify-center items-center">
               <svg
                 aria-hidden="true"
-                className="w-16 h- mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                className="w-16 h- mr-2 text-gray-200 animate-spin dark:text-purple-800 fill-purple-600"
                 viewBox="0 0 100 101"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -576,26 +582,20 @@ function StyledForm() {
       <Box
         sx={{
           display: "flex",
-          py: 5,
           flexDirection: "column",
           height: "fit-content",
-          marginTop: 2,
           width: "100%",
           justifyContent: "center",
           alignItems: "center",
         }}
       >
-        <Box
-          sx={{
-            alignSelf: "flex-start",
-            color: "secondary.main",
-            fontWeight: "bolder",
-            fontSize: "1.1rem",
-            pb: 2,
-          }}
+        <Typography
+          variant="h5"
+          color="secondary"
+          sx={{ mb: 2, fontWeight: "bold", alignSelf: "flex-start" }}
         >
           {user ? "Query History" : "Example Prompts"}
-        </Box>
+        </Typography>
         <TableContainer
           component={Paper}
           sx={{

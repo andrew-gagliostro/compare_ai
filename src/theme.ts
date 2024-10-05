@@ -1,12 +1,12 @@
 import { createTheme, responsiveFontSizes } from "@mui/material";
 
 export const primary = "#7a808d";
-export const secondary = "#1D29BF";
+export const secondary = "#5d34c5";
 
 const theme = createTheme({
   palette: {
     background: {
-      paper: "#fff",
+      paper: "#dbdbdb",
       default: "#0d1218",
     },
     primary: {
@@ -62,7 +62,7 @@ const theme = createTheme({
     body1: {
       fontSize: "1rem",
       lineHeight: 1.75,
-      color: "#d1d5db",
+      color: "black",
     },
     body2: {
       fontSize: "1rem",

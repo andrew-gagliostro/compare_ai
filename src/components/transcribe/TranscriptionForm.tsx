@@ -175,15 +175,19 @@ function TranscriptionForm() {
     <Paper
       elevation={3}
       sx={{
-        width: "90%",
+        width: "97%",
         my: 4,
-        p: 3,
+        p: 2,
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
       }}
     >
-      <Typography variant="h5" sx={{ mb: 1 }}>
+      <Typography
+        variant="h5"
+        color="secondary"
+        sx={{ mb: 2, fontWeight: "bold" }}
+      >
         Generate Transcription
       </Typography>
       <Typography sx={{ mb: 2 }}>
