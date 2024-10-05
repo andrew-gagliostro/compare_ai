@@ -24,6 +24,7 @@ import {
   Container,
   Menu,
   MenuItem,
+  Divider,
 } from "@mui/material";
 
 import { Download } from "@mui/icons-material";
@@ -490,14 +491,14 @@ function StyledForm() {
               (prompt && prompt.length)
             )
           }
-          sx={{ mt: 2, width: "full" }}
+          sx={{ my: 2 }}
         >
           Submit
         </Button>
         {/* if response is null, show nothing
       if response === "Loading..." create a loading box with some sort of effect
       else print out a styled response and have is fade in with some sort of effect*/}
-        <Box sx={{ my: 5 }}>
+        <Box>
           {response === null ? (
             ""
           ) : response === "Loading..." ? (
@@ -587,8 +588,10 @@ function StyledForm() {
           width: "100%",
           justifyContent: "center",
           alignItems: "center",
+          mt: 5,
         }}
       >
+        <Divider color="gray" sx={{ width: "100%", mb: 2 }} />
         <Typography
           variant="h5"
           color="secondary"
