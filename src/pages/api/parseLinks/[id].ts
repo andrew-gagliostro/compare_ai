@@ -7,6 +7,13 @@ import ResponseHelper from "@/backend/responseHelper";
 import connect from "@/backend/connect";
 import { fetchReadableUrlContent } from "@/backend/utils/fetchContent";
 
+export const config = {
+  maxDuration: 60,
+  api: {
+    bodyParser: false, // Disable the default bodyParser
+  },
+};
+
 class ParseLinksHandler extends ResponseHelper {
   async post(): Promise<any> {
     try {

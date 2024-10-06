@@ -7,6 +7,10 @@ import docx from "remark-docx";
 import chromium from "@sparticuz/chromium";
 import path from "path";
 
+export const config = {
+  maxDuration: 60,
+};
+
 const isProduction = process.env.NODE_ENV === "production";
 
 if (isProduction) {

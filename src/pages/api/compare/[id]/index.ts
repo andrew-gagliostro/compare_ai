@@ -23,7 +23,7 @@ import connect from "@/backend/connect";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export const config = {
-  // maxDuration: 200,
+  maxDuration: 60,
   api: {
     bodyParser: false, // Disable the default bodyParser
   },

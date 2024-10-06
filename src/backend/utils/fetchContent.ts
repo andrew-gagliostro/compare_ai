@@ -7,6 +7,13 @@ import OpenAI from "openai";
 import { NodeHtmlMarkdown } from "node-html-markdown";
 import { Readability } from "@mozilla/readability";
 
+export const config = {
+  maxDuration: 60,
+  api: {
+    bodyParser: false, // Disable the default bodyParser
+  },
+};
+
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 function getRandomUserAgent() {
