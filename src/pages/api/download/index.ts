@@ -46,13 +46,11 @@ export default async function handler(
         const pdf = await mdToPdf(
           { content: response },
           {
-            stylesheet: [path.join(process.cwd(), "public", "styles.min.css")],
             launch_options: launchOptions,
             pdf_options: {
               format: "A4",
               printBackground: true,
               displayHeaderFooter: true,
-              margin: { left: 5, right: 5, top: 25, bottom: 25 },
               footerTemplate: `
           <style>
             section {
@@ -73,7 +71,7 @@ export default async function handler(
                 overflow: hidden; 
                 text-overflow: ellipsis; 
                 word-wrap: break-word;
-                font-size: 10px;
+                font-size: 8px;
               }
               th, td {
                 text-align: left;

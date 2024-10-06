@@ -23,7 +23,7 @@ import connect from "@/backend/connect";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export const config = {
-  maxDuration: 200,
+  // maxDuration: 200,
   api: {
     bodyParser: false, // Disable the default bodyParser
   },
@@ -84,19 +84,6 @@ async function fetchReadableUrlContent(url) {
     console.error("An error occurred:", error);
     return null;
   }
-}
-
-// function that takes a string and truncates it to a word boundary of given word count
-function truncateStringToTokenCount(str: string, num: number) {
-  return str.split(/\s+/).slice(0, num).join(" ");
-}
-
-// function that removes links from markdown
-function removeLinksFromMarkdown(text: string) {
-  // Replace all link occurrences with the link text
-  let regex = /\[([^\]]+)]\(([^)]+)\)/g;
-  text = text.replace(regex, "$1");
-  return text;
 }
 
 async function parseForm(
@@ -193,22 +180,18 @@ class Response extends ResponseHelper {
       const { links } = queryHistory;
       // Now you have prompt as a string, links as a string array, and filePaths as an array of the paths to the saved files
       console.log({ prompt, links, filePaths });
-      let linkStatuses = [];
+      // let linkStatuses = [];
       for (let link of links) {
+        const content = link.content;
         const url = link.link;
-
-        const content = await fetchReadableUrlContent(link.link); // Assuming each link is an object with a 'url' property
         if (content) {
           // If content was successfully fetched and parsed, mark the link as 'completed'
-          linkStatuses.push({ link: link.link, status: "Parsed" });
           messages.push({
             role: "user",
             content: `Parsed:${url}\n${content ? content : ""}`,
             name: `WEB`,
           });
         } else {
-          // If fetching/parsing failed, mark the link as 'failed'
-          linkStatuses.push({ link: link.link, status: "Failed To Parse" });
           messages.push({
             role: "user",
             content: `Failed To Parse:${url}\n${content ? content : ""}`,
@@ -216,8 +199,6 @@ class Response extends ResponseHelper {
           });
         }
       }
-      queryHistory.links = linkStatuses; // Assuming there's a field in your schema to store these statuses
-      await queryHistory.save();
 
       if (files.files) {
         const uploadedFiles = Array.isArray(files.files)
@@ -239,16 +220,11 @@ class Response extends ResponseHelper {
         }
       }
 
-      await Promise.all(
+      Promise.all(
         filePaths.map(async (filePath) => {
           await fs.promises.unlink(filePath);
         })
       );
-
-      // messages.push({
-      //   role: "system",
-      //   content: JSON.stringify(scrapedText),
-      // });
 
       // scrape text from https links and add each to new array of strings called scrapedText
       console.log("MESSAGES: " + JSON.stringify(messages, null, 4));
@@ -261,7 +237,7 @@ class Response extends ResponseHelper {
       let aiResponse = await openai.chat.completions.create({
         model: "gpt-4o",
         messages: messages as ChatCompletionMessageParam[],
-        temperature: 0.75,
+        temperature: 0.5,
       });
 
       // log the response and return the response to client with 200 status code

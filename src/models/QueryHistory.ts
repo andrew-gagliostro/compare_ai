@@ -20,6 +20,8 @@ export enum QueryType {
 
 export interface LinkModel {
   link: string;
+  content: string;
+  ß;
   status: LinkStatus;
 }
 
@@ -52,6 +54,10 @@ const queryHistorySchema = new mongoose.Schema<QueryHistoryModel>(
           link: {
             type: String,
             required: true,
+          },
+          content: {
+            type: String,
+            required: false,
           },
           status: {
             type: String,

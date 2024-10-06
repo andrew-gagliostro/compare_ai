@@ -195,16 +195,16 @@ function StyledForm() {
 
       const historyId = postResponse.data.result._id; // Assuming the response includes the ID of the created history
 
+      const parseLinksResponse = await axios.post(
+        `/api/parseLinks/${historyId}`
+      );
+
+      let queryHistory: QueryHistoryModel = parseLinksResponse.data.result;
+      setLinks(queryHistory.links);
+
       const formData = new FormData();
 
       formData.append("prompt", prompt);
-      if (links.length)
-        links.forEach((link, index) =>
-          formData.append(
-            `links[${index}]`,
-            typeof link === "string" ? link : link.link
-          )
-        );
       if (files && files.length) {
         files.forEach((file) => {
           formData.append("files", file);
